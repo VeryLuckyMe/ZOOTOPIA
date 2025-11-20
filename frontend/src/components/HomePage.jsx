@@ -194,19 +194,25 @@ const HomePage = () => {
     navigate('/products');
   };
 
+  // Determine slidesToShow dynamically so slick doesn't clone slides
+  // when there are fewer products than the desired number of visible slides.
+  const computedSlidesToShow = Math.min(3, Math.max(1, products.length || 1));
+
   const sliderSettings = {
     dots: false,
-    infinite: true,
+    // disable infinite loop when there aren't enough slides to avoid cloning/duplicates
+    infinite: products.length > computedSlidesToShow,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: computedSlidesToShow,
     slidesToScroll: 1,
     nextArrow: <CustomNextArrow />,
     prevArrow: <CustomPrevArrow />,
+    adaptiveHeight: true,
     responsive: [
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: Math.min(2, computedSlidesToShow),
           slidesToScroll: 1,
         },
       },
@@ -290,25 +296,29 @@ const HomePage = () => {
               color: theme.palette.primary.main,
             }}
           >
-            Our Featured Products
+             Our Featured Products
           </Typography>
           <Divider sx={{ marginBottom: 3, borderColor: theme.palette.primary.light }} />
 
           <Box sx={{ position: 'relative', marginBottom: '2rem' }}>
             <Slider {...sliderSettings}>
               {products.map((product, index) => (
-                <Box 
-                  key={index} 
-                  sx={{ 
-                    padding: '0 15px',
+                <Box
+                  key={index}
+                  sx={{
+                    padding: '0 20px',
+                    display: 'flex',
+                    justifyContent: 'center',
                   }}
                 >
-                  <Card 
-                    sx={{ 
-                      boxShadow: 3, 
-                      textAlign: 'center', 
+                  <Card
+                    sx={{
+                      boxShadow: 3,
+                      textAlign: 'center',
                       borderRadius: 2,
-                      margin: '10px 0',
+                      margin: 2,
+                      width: '100%',
+                      maxWidth: 360,
                       height: '100%',
                       display: 'flex',
                       flexDirection: 'column',
@@ -383,7 +393,7 @@ const HomePage = () => {
           </Typography>
           <Divider sx={{ marginBottom: 3, borderColor: theme.palette.primary.light }} />
 
-          <Grid container spacing={4} justifyContent="center" alignItems="stretch">
+          <Grid container spacing={6} justifyContent="center" alignItems="stretch">
             <Grid item xs={12} sm={5} md={4}>
               <Box
                 sx={{
