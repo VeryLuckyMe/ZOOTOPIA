@@ -8,7 +8,7 @@ function Footer() {
   return (
     <Box
       sx={{
-        backgroundColor: '#F9F6E7',
+        backgroundColor: '#d3d4ffff',
         padding: '20px',
         borderTop: '1px solid black',
         textAlign: 'center',

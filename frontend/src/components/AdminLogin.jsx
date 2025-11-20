@@ -75,7 +75,7 @@ const AdminLogin = () => {
         alignItems: "center",
         height: "100vh",
         width: "100vw",
-        backgroundColor: "#F5F5DC",
+        backgroundColor: "#d2e1ffff",
         position: "relative",
         overflow: "hidden",
       }}

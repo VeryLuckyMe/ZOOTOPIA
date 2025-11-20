@@ -121,7 +121,7 @@ const Appointment = () => {
         minHeight: '100vh',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f7f7f7',
+        backgroundColor: '#d2e1ffff',
       }}
     >
        {pawPositions.map((pos, index) => (
@@ -143,7 +143,7 @@ const Appointment = () => {
           padding: '2rem',
           boxShadow: 3,
           borderRadius: 2,
-          backgroundColor: '#ffffff',
+          backgroundColor: '#d2e1ffff',
         }}
       >  
        
@@ -273,9 +273,9 @@ const Appointment = () => {
                     fullWidth
                     sx={{
                       mt: 2,
-                      backgroundColor: '#ff9800',
+                      backgroundColor: '#8670ffff',
                       color: 'white',
-                      '&:hover': { backgroundColor: '#f57c00' },
+                      '&:hover': { backgroundColor: '#5d40ffff' },
                       fontWeight: 'bold',
                     }}
                   >

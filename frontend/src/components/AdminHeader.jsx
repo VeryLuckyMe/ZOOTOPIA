@@ -40,7 +40,7 @@ export default function AdminHeader() {
         position="fixed"
         sx={{
           width: "100%",
-          backgroundColor: "#FFFACD",
+          backgroundColor: "#d3d4ffff",
           boxShadow: "none",
           borderRadius: "10px 10px 0 0",
         }}
