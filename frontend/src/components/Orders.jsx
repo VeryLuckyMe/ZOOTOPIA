@@ -25,7 +25,7 @@ const theme = createTheme({
       light: "#95caff", // Even lighter
     },
     secondary: {
-      main: "#FFA500", // Orange for actions
+      main: "#001affff", // Orange for actions
     },
     background: {
       default: "#e6f0ff", // Soft light blue background

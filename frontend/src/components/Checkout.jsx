@@ -25,17 +25,9 @@ import imagePlaceholder from "../assets/image.png";
 
 const theme = createTheme({
   palette: {
-    primary: {
-      main: "#8B4513",
-      light: "#D2B48C",
-    },
-    secondary: {
-      main: "#FFA500",
-    },
-    background: {
-      default: "#FFF5E6",
-      paper: "#FFFFFF",
-    },
+    primary: { main: "#63a4ff", light: "#95caff" },
+    secondary: { main: "#1800f5ff" },
+    background: { default: "#e6f0ff", paper: "#FFFFFF" },
   },
   typography: {
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -43,11 +35,7 @@ const theme = createTheme({
   components: {
     MuiButton: {
       styleOverrides: {
-        root: {
-          borderRadius: 12,
-          textTransform: "none",
-          fontWeight: 600,
-        },
+        root: { borderRadius: 12, textTransform: "none", fontWeight: 600 },
       },
     },
     MuiPaper: {
@@ -56,9 +44,7 @@ const theme = createTheme({
           borderRadius: 16,
           boxShadow: "0 6px 12px rgba(0,0,0,0.1)",
           transition: "transform 0.3s ease",
-          "&:hover": {
-            transform: "translateY(-5px)",
-          },
+          "&:hover": { transform: "translateY(-5px)" },
         },
       },
     },
@@ -79,26 +65,15 @@ const ScatteredPaws = ({ count = 10 }) => {
     { bottom: "20%", left: "15%" },
   ];
 
-  return (
-    <>
-      {positions.slice(0, count).map((pos, index) => (
-        <Box
-          key={index}
-          component="img"
-          src={paw1}
-          alt="Paw Icon"
-          sx={{
-            position: "absolute",
-            width: "30px",
-            height: "30px",
-            opacity: 0.3,
-            zIndex: 1,
-            ...pos,
-          }}
-        />
-      ))}
-    </>
-  );
+  return positions.slice(0, count).map((pos, idx) => (
+    <Box
+      key={idx}
+      component="img"
+      src={paw1}
+      alt="Paw Icon"
+      sx={{ position: "absolute", width: 30, height: 30, opacity: 0.3, zIndex: 1, ...pos }}
+    />
+  ));
 };
 
 const PageWrapper = styled(Box)(({ theme }) => ({
@@ -114,15 +89,11 @@ const HeaderWrapper = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(4),
 }));
 
-const CartIcon = styled("img")({
-  width: "60px",
-  height: "60px",
-  marginRight: "15px",
-});
+const CartIcon = styled("img")({ width: 60, height: 60, marginRight: 15 });
 
 const PawPrint = styled("img")(({ theme }) => ({
   position: "absolute",
-  width: "100px",
+  width: 100,
   height: "auto",
   opacity: 0.1,
   zIndex: -1,
@@ -132,11 +103,7 @@ const CheckoutPage = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-
-  const { selectedItems, orderSummary } = location.state || {
-    selectedItems: [],
-    orderSummary: {},
-  };
+  const { selectedItems, orderSummary } = location.state || { selectedItems: [], orderSummary: {} };
 
   const clearState = () => {
     navigate(location.pathname, { state: { selectedItems: [], orderSummary: {} } });
@@ -145,33 +112,18 @@ const CheckoutPage = () => {
   useEffect(() => {
     const userId = localStorage.getItem("id");
 
-    if (!userId) {
-      navigate("/");
-      return;
-    }
-    if (selectedItems.length === 0) {
-      navigate("/cart");
-      return;
-    }
+    if (!userId) return navigate("/");
+    if (!selectedItems.length) return navigate("/cart");
 
     axios
       .get(`http://localhost:8080/auth/user/findById/${userId}`)
-      .then((response) => {
-        setUser(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching user data:", error);
-      });
+      .then((res) => setUser(res.data))
+      .catch((err) => console.error("Error fetching user data:", err));
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const userId = localStorage.getItem("id");
-
-    if (selectedItems.length === 0) {
-      toast.warning("No items to order. Please go back and add items to the cart.");
-      return;
-    }
+    if (!selectedItems.length) return toast.warning("No items to order. Please add items to the cart.");
 
     const orderItems = selectedItems.map((item) => ({
       orderItemName: item.product.productName,
@@ -181,87 +133,57 @@ const CheckoutPage = () => {
       productId: item.product.productID,
     }));
 
-    const orderDate = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
-
     const orderData = {
       orderItems,
-      orderDate,
+      orderDate: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
       orderStatus: "To Receive",
       paymentMethod: "Cash on Delivery",
       totalPrice: orderSummary.total,
-      user: user,
+      user,
     };
 
     try {
-      const response = await axios.post("http://localhost:8080/api/order/postOrderRecord", orderData);
-
-      if (response.status === 200) {
+      const res = await axios.post("http://localhost:8080/api/order/postOrderRecord", orderData);
+      if (res.status === 200) {
         toast.success("Order successfully placed!");
-
         for (let item of selectedItems) {
-          const cartItemId = item.cartItemId;
-          await axios
-            .delete(`http://localhost:8080/api/cartItem/deleteCartItem/${cartItemId}`)
-            .then((response) => {
-              if (response.status === 200) {
-                console.log(`Cart item ${cartItemId} removed from cart`);
-              }
-            })
-            .catch((error) => {
-              console.error(`Error removing cart item ${cartItemId}:`, error);
-            });
+          await axios.delete(`http://localhost:8080/api/cartItem/deleteCartItem/${item.cartItemId}`);
         }
-
         clearState();
-
-        navigate("/MyPurchases", { state: { orders: response.data } });
-      } else {
-        toast.error("Failed to place the order. Please try again.");
+        navigate("/MyPurchases", { state: { orders: res.data } });
       }
-    } catch (error) {
-      console.error("Error placing the order:", error);
-      toast.error("An error occurred while placing the order.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to place order. Try again.");
     }
   };
 
-  if (!user) {
-    return <Typography variant="h6">Loading user data...</Typography>;
-  }
+  if (!user) return <Typography variant="h6">Loading user data...</Typography>;
 
   return (
     <ThemeProvider theme={theme}>
       <PageWrapper>
         <Toaster position="top-center" duration={2500} />
         <HeaderWrapper>
-          <CartIcon src={cart} alt="Pet Icon" />
-          <Typography
-            variant="h3"
-            component="h1"
-            sx={{
-              textAlign: "center",
-              fontWeight: 700,
-              color: "primary.main",
-              textShadow: "1px 1px 2px rgba(0,0,0,0.1)",
-            }}
-          >
+          <CartIcon src={cart} alt="Cart Icon" />
+          <Typography variant="h3" component="h1" sx={{ fontWeight: 700, color: "primary.main", textShadow: "1px 1px 2px rgba(0,0,0,0.1)" }}>
             Checkout
           </Typography>
         </HeaderWrapper>
 
         <ScatteredPaws />
-
-        <Box display="flex" justifyContent="flex-start">
-          <IconButton color="primary" onClick={() => navigate(-1)} sx={{ marginBottom: 2 }}>
+        <Box display="flex" justifyContent="flex-start" mb={2}>
+          <IconButton color="primary" onClick={() => navigate(-1)}>
             <ArrowBackIcon />
           </IconButton>
         </Box>
 
-        <Typography variant="h6" gutterBottom color="text.secondary" textAlign="center">
-          Complete your purchase by reviewing your order and confirming your details.
+        <Typography variant="subtitle1" color="text.secondary" textAlign="center" mb={4}>
+          Review your order and confirm your billing & shipping details before completing your purchase.
         </Typography>
 
         <Grid container spacing={4}>
-          {/* ORDER SUMMARY */}
+          {/* Order Summary */}
           <Grid item xs={12} md={7}>
             <Paper elevation={4} sx={{ padding: 4, position: "relative", overflow: "hidden" }}>
               <PawPrint src={paw1} alt="Paw Print" sx={{ top: -20, left: -20 }} />
@@ -270,95 +192,57 @@ const CheckoutPage = () => {
               </Typography>
 
               <List>
-                {selectedItems.map((item, index) => (
-                  <ListItem key={index}>
-                    <Box
-                      component="img"
-                      src={item.product.productImage || imagePlaceholder}
-                      alt={item.product.productName}
-                      sx={{ width: 56, height: 56, objectFit: "contain", marginRight: 2, borderRadius: 1 }}
-                    />
+                {selectedItems.map((item, idx) => (
+                  <ListItem key={idx}>
+                    <Box component="img" src={item.product.productImage || imagePlaceholder} alt={item.product.productName} sx={{ width: 56, height: 56, objectFit: "contain", mr: 2, borderRadius: 1 }} />
                     <ListItemText
-                      primary={
-                        <Typography variant="subtitle1" color="text.primary">
-                          {item.product.productName}
-                        </Typography>
-                      }
-                      secondary={
-                        <Typography variant="body2" color="text.secondary">
-                          ₱{item.product.productPrice} x {item.quantity}
-                        </Typography>
-                      }
+                      primary={<Typography variant="subtitle1">{item.product.productName}</Typography>}
+                      secondary={<Typography variant="body2" color="text.secondary">₱{item.product.productPrice} x {item.quantity}</Typography>}
                     />
                   </ListItem>
                 ))}
               </List>
 
-              <Divider sx={{ marginY: 2 }} />
+              <Divider sx={{ my: 2 }} />
               <Box display="flex" justifyContent="space-between">
-                <Typography variant="subtitle1">Subtotal</Typography>
-                <Typography variant="subtitle1" color="text.secondary">
-                  ₱{orderSummary.subtotal}
-                </Typography>
+                <Typography>Subtotal</Typography>
+                <Typography color="text.secondary">₱{orderSummary.subtotal}</Typography>
               </Box>
               <Box display="flex" justifyContent="space-between">
-                <Typography variant="subtitle1">Shipping Fee</Typography>
-                <Typography variant="subtitle1" color="text.secondary">
-                  ₱{orderSummary.shippingFee}
-                </Typography>
+                <Typography>Shipping Fee</Typography>
+                <Typography color="text.secondary">₱{orderSummary.shippingFee}</Typography>
               </Box>
-              <Divider sx={{ marginY: 2 }} />
+              <Divider sx={{ my: 2 }} />
               <Box display="flex" justifyContent="space-between">
-                <Typography variant="h6" color="primary.main">
-                  Total
-                </Typography>
-                <Typography variant="h6" color="primary.main">
-                  ₱{orderSummary.total}
-                </Typography>
+                <Typography variant="h6" color="primary.main">Total</Typography>
+                <Typography variant="h6" color="primary.main">₱{orderSummary.total}</Typography>
               </Box>
             </Paper>
           </Grid>
 
-          {/* BILLING DETAILS */}
+          {/* Billing Details */}
           <Grid item xs={12} md={5}>
             <Paper elevation={4} sx={{ padding: 4, position: "relative", overflow: "hidden" }}>
               <PawPrint src={paw1} alt="Paw Print" sx={{ bottom: -20, right: -20 }} />
               <Typography variant="h5" gutterBottom color="primary.main">
-                Billing & Shipping Details
+                Billing & Shipping
               </Typography>
+
               <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <Typography variant="subtitle1" color="text.primary">
-                      <strong>Full Name:</strong> {user.firstName} {user.lastName}
+                    <Typography><strong>Name:</strong> {user.firstName} {user.lastName}</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography><strong>Email:</strong> {user.email}</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography>
+                      <strong>Address:</strong> {user.address?.streetBuildingHouseNo}, {user.address?.barangay}, {user.address?.city} City, Region {user.address?.region}, {user.address?.postalCode}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
-                    <Typography variant="subtitle1" color="text.primary">
-                      <strong>Email:</strong> {user.email}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="subtitle1" color="text.primary">
-                      <strong>Address:</strong> {user.address?.streetBuildingHouseNo} {user.address?.barangay},{" "}
-                      {user.address?.city} City, Region {user.address?.region}, {user.address?.postalCode}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      sx={{
-                        fontSize: "1rem",
-                        padding: 1.5,
-                        mt: 2,
-                        "&:hover": {
-                          backgroundColor: "secondary.main",
-                        },
-                      }}
-                    >
+                    <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2, fontSize: "1rem", py: 1.5, "&:hover": { backgroundColor: "secondary.main" } }}>
                       Place Order
                     </Button>
                   </Grid>
