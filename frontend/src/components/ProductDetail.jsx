@@ -19,32 +19,15 @@ import axios from "axios";
 import { Toaster, toast } from "sonner";
 import StarDisplay from "./StarDisplay";
 import { createTheme, ThemeProvider, styled } from "@mui/material/styles";
+import petBall from "../assets/petball.png"; // Default fallback image
 
 const theme = createTheme({
   palette: {
-    primary: {
-<<<<<<< HEAD
-      main: "#8670ffff",
-      light: "#2600ffff",
-    },
-    secondary: {
-      main: "#3735b3ff",
-=======
-      main: "#8B4513",
-      light: "#D2B48C",
-    },
-    secondary: {
-      main: "#FFA500",
->>>>>>> 5ce4f3c8c86000d4ef24d867a2b5052d291cd4f9
-    },
-    background: {
-      default: "#cadbffff",
-      paper: "#FFFFFF",
-    },
+    primary: { main: "#8670ffff", light: "#2600ffff" },
+    secondary: { main: "#3735b3ff", light: "#D2B48C" },
+    background: { default: "#cadbffff", paper: "#FFFFFF" },
   },
-  typography: {
-    fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
-  },
+  typography: { fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif' },
 });
 
 const PageWrapper = styled(Box)(({ theme }) => ({
@@ -59,107 +42,113 @@ const ProductDetail = () => {
   const [reviews, setReviews] = useState([]);
   const [itemQuantity, setItemQuantity] = useState(1);
 
+  // Fetch product details and reviews
   useEffect(() => {
-    const fetchProductDetails = async () => {
-      if (!productId) {
-        console.error("Product ID is missing.");
-        return;
-      }
+    if (!productId) return;
 
+    const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/product/getProduct/${productId}`);
-        const data = await response.json();
+        const res = await fetch(`http://localhost:8080/api/product/getProduct/${productId}`);
+        const data = await res.json();
         setProduct(data);
-      } catch (error) {
-        console.error("Error fetching product details:", error);
+        setItemQuantity(1); // Reset quantity whenever product changes
+      } catch (err) {
+        console.error("Error fetching product:", err);
       }
     };
 
     const fetchReviews = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/review/getReviewsByProductId/${productId}`);
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setReviews(data);
-        } else {
-          console.error("Expected an array but got:", data);
-        }
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
+        const res = await fetch(
+          `http://localhost:8080/api/review/getReviewsByProductId/${productId}`
+        );
+        const data = await res.json();
+        if (Array.isArray(data)) setReviews(data);
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
       }
     };
 
-    fetchProductDetails();
+    fetchProduct();
     fetchReviews();
   }, [productId]);
 
+  // Quantity handlers
   const handleIncreaseQuantity = () => {
-    setItemQuantity((prev) => Math.min(prev + 1, product.quantity));
+    if (!product) return;
+    setItemQuantity((prev) => Math.min(prev + 1, product.quantity || 1));
   };
 
   const handleDecreaseQuantity = () => {
     setItemQuantity((prev) => Math.max(prev - 1, 1));
   };
 
+  // Add to cart
   const handleAddToCart = async () => {
     const cartId = localStorage.getItem("id");
-    if (itemQuantity <= 0) {
+    if (!cartId) {
+      toast.warning("You must be logged in to add items to the cart!");
+      return;
+    }
+    if (!product || itemQuantity <= 0) {
       toast.warning("Quantity must be greater than 0!");
       return;
     }
+
     const cartItem = {
       quantity: itemQuantity,
-      cart: {
-        cartId: cartId,
-      },
-      product: {
-        productID: product.productID,
-      },
+      cart: { cartId },
+      product: { productID: product.productID },
     };
 
     try {
-      const cartResponse = await axios.get(`http://localhost:8080/api/cart/getCartById/${cartId}`);
-      const existingCartItems = cartResponse.data.cartItems;
+      const cartRes = await axios.get(`http://localhost:8080/api/cart/getCartById/${cartId}`);
+      const existingItem = cartRes.data.cartItems.find(
+        (item) => item.product.productID === product.productID
+      );
 
-      const existingCartItem = existingCartItems.find((item) => item.product.productID === product.productID);
-
-      if (existingCartItem) {
-        const updatedQuantity = existingCartItem.quantity + itemQuantity;
+      if (existingItem) {
+        const updatedQuantity = existingItem.quantity + itemQuantity;
         if (updatedQuantity > product.quantity) {
           toast.error(
-            `You already have ${existingCartItem.quantity} in your cart. Unable to add more as it would exceed the remaining stock`
+            `You already have ${existingItem.quantity} in your cart. Cannot exceed stock.`
           );
           return;
         }
-        await axios.put(`http://localhost:8080/api/cartItem/updateCartItem/${existingCartItem.cartItemId}`, {
-          quantity: updatedQuantity,
-        });
-
-        toast.success(`Added ${itemQuantity} more of this item to the cart`);
+        await axios.put(
+          `http://localhost:8080/api/cartItem/updateCartItem/${existingItem.cartItemId}`,
+          { quantity: updatedQuantity }
+        );
+        toast.success(`Added ${itemQuantity} more to your cart!`);
       } else {
-        const response = await axios.post("http://localhost:8080/api/cartItem/postCartItem", cartItem);
-
+        await axios.post("http://localhost:8080/api/cartItem/postCartItem", cartItem);
         toast.success("Added to cart!");
       }
-    } catch (error) {
-      toast.error("Failed to add to cart. Please try again.");
+    } catch (err) {
+      console.error("Cart error:", err);
+      toast.error("Failed to add to cart. Try again.");
     }
   };
 
-  if (!product) return <Typography>Loading...</Typography>;
+  if (!product)
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+        <Typography>Loading product details...</Typography>
+      </Box>
+    );
 
   return (
     <ThemeProvider theme={theme}>
       <PageWrapper>
         <Toaster position="top-center" duration={2500} />
 
-        {/* Wrapper Box to center the card */}
         <Box
           sx={{
             display: "flex",
             justifyContent: "center",
-            alignItems: "center",
-            height: "100vh", // Makes the parent container take the full height of the viewport
+            alignItems: "flex-start",
+            flexDirection: "column",
+            mb: 4,
           }}
         >
           <Card
@@ -167,28 +156,29 @@ const ProductDetail = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              justifyContent: "center",
+              width: { xs: "90%", sm: "70%", md: "50%" },
+              mx: "auto",
+              p: 3,
               mb: 4,
-              width: "50%",
             }}
           >
             <CardMedia
               component="img"
-              sx={{ width: "300px", height: "300px", objectFit: "cover", mb: 2 }}
-              image={product.productImage || "/placeholder-image.png"}
+              image={product.productImage || petBall}
               alt={product.productName}
+              sx={{ width: 300, height: 300, objectFit: "cover", mb: 2 }}
             />
             <CardContent sx={{ textAlign: "center" }}>
-              <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
+              <Typography variant="h5" fontWeight="bold" mb={1}>
                 {product.productName}
               </Typography>
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+              <Typography variant="body1" color="text.secondary" mb={2}>
                 {product.description}
               </Typography>
-              <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
+              <Typography variant="h6" color="primary" mb={2}>
                 Price: ₱{product.productPrice.toFixed(2)}
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              <Typography variant="body2" color="text.secondary" mb={2}>
                 Available Stock: {product.quantity}
               </Typography>
 
@@ -203,18 +193,21 @@ const ProductDetail = () => {
                   inputProps={{ style: { textAlign: "center" } }}
                   sx={{ width: 60, mx: 1 }}
                 />
-                <IconButton onClick={handleIncreaseQuantity} disabled={itemQuantity >= product.quantity}>
+                <IconButton
+                  onClick={handleIncreaseQuantity}
+                  disabled={itemQuantity >= (product.quantity || 1)}
+                >
                   <AddIcon />
                 </IconButton>
               </Box>
-              <Tooltip title={product?.quantity <= 0 ? "Out of stock" : ""}>
+
+              <Tooltip title={product.quantity <= 0 ? "Out of stock" : ""}>
                 <span>
                   <Button
                     variant="contained"
                     color="primary"
                     onClick={handleAddToCart}
                     disabled={product.quantity <= 0}
-                    sx={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
                   >
                     Add to Cart
                   </Button>
@@ -225,26 +218,29 @@ const ProductDetail = () => {
         </Box>
 
         <Divider sx={{ mb: 4 }} />
-
-        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+        <Typography variant="h6" fontWeight="bold" mb={2}>
           Reviews
         </Typography>
+
         <Grid container spacing={2}>
           {reviews.length > 0 ? (
-            reviews.map((review, index) => (
-              <Grid item xs={12} key={index}>
+            reviews.map((review, idx) => (
+              <Grid item xs={12} key={idx}>
                 <Card>
                   <CardContent>
-                    <Typography variant="body2"> {review.username}</Typography>
-                    <br />
-                    <StarDisplay rating={review.ratings} /> {/* Display star rating */}
-                    <Typography variant="body2">Comment: {review.comment}</Typography>
+                    <Typography variant="subtitle2" fontWeight="bold">
+                      {review.username}
+                    </Typography>
+                    <StarDisplay rating={review.ratings} />
+                    <Typography variant="body2">{review.comment}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
             ))
           ) : (
-            <Typography>No reviews available for this product.</Typography>
+            <Grid item xs={12}>
+              <Typography>No reviews available for this product.</Typography>
+            </Grid>
           )}
         </Grid>
       </PageWrapper>

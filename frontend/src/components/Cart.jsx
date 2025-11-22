@@ -29,27 +29,15 @@ import cart from "../assets/cart.png";
 const theme = createTheme({
   palette: {
     primary: {
-<<<<<<< HEAD
-      main: '#8670ffff', // Rich Brown
-      light: '#2600ffff', // Tan
+      main: "#63a4ff", // Light Blue
+      light: "#95caff", // Even lighter
     },
     secondary: {
-      main: '#4c3fffff', // Vibrant Orange
+      main: "#FFA500", // Orange for actions
     },
     background: {
-      default: '#d2e1ffff', // Soft Cream
-      paper: '#FFFFFF',
-=======
-      main: "#8B4513",
-      light: "#D2B48C",
-    },
-    secondary: {
-      main: "#FFA500",
-    },
-    background: {
-      default: "#FFF5E6",
+      default: "#e6f0ff", // Soft light blue background
       paper: "#FFFFFF",
->>>>>>> 5ce4f3c8c86000d4ef24d867a2b5052d291cd4f9
     },
   },
   typography: {
@@ -109,7 +97,7 @@ const ScatteredPaws = ({ count = 10 }) => {
             position: "absolute",
             width: "30px",
             height: "30px",
-            opacity: 0.3,
+            opacity: 0.15,
             zIndex: 1,
             ...pos,
           }}
@@ -123,6 +111,7 @@ const PageWrapper = styled(Box)(({ theme }) => ({
   background: `linear-gradient(135deg, ${theme.palette.primary.light}20, ${theme.palette.background.default})`,
   minHeight: "100vh",
   padding: theme.spacing(4),
+  position: "relative",
 }));
 
 const HeaderWrapper = styled(Box)(({ theme }) => ({
@@ -162,9 +151,10 @@ function Cart() {
         const updatedCartItems = res.data.cartItems.map((item) => {
           if (item.quantity > item.product.quantity) {
             axios
-              .put(`http://localhost:8080/api/cartItem/systemUpdateCartItem/${item.cartItemId}`, {
-                quantity: item.product.quantity,
-              })
+              .put(
+                `http://localhost:8080/api/cartItem/systemUpdateCartItem/${item.cartItemId}`,
+                { quantity: item.product.quantity }
+              )
               .catch((err) => console.error("Error updating quantity:", err));
 
             return {
@@ -175,9 +165,9 @@ function Cart() {
           return item;
         });
 
-        const sortedCartItems = updatedCartItems.sort((a, b) => {
-          return new Date(b.lastUpdated) - new Date(a.lastUpdated);
-        });
+        const sortedCartItems = updatedCartItems.sort(
+          (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
+        );
 
         setCartItem(sortedCartItems);
       })
@@ -197,11 +187,8 @@ function Cart() {
 
   const handleCheckChange = (itemId, isChecked) => {
     const updatedSelectedItems = new Set(selectedItems);
-    if (isChecked) {
-      updatedSelectedItems.add(itemId);
-    } else {
-      updatedSelectedItems.delete(itemId);
-    }
+    if (isChecked) updatedSelectedItems.add(itemId);
+    else updatedSelectedItems.delete(itemId);
     setSelectedItems(updatedSelectedItems);
   };
 
@@ -212,13 +199,12 @@ function Cart() {
       })
       .then(() => {
         setCartItem((prevItems) =>
-          prevItems.map((item) => (item.cartItemId === itemId ? { ...item, quantity: newQuantity } : item))
+          prevItems.map((item) =>
+            item.cartItemId === itemId ? { ...item, quantity: newQuantity } : item
+          )
         );
       })
-      .catch((err) => {
-        console.error("Error updating quantity:", err);
-        toast.error("Error updating quantity.");
-      });
+      .catch(() => toast.error("Error updating quantity."));
   };
 
   const handleDeleteItem = (itemId) => {
@@ -241,13 +227,14 @@ function Cart() {
       .get(`http://localhost:8080/auth/user/findById/${userId}`)
       .then((res) => {
         const userAddress = res.data?.address ?? null;
-
-        if (userAddress === null) {
+        if (!userAddress) {
           setNoAddressDialog(true);
           return;
         }
 
-        const selectedItemsDetails = cartItems.filter((item) => selectedItems.has(item.cartItemId));
+        const selectedItemsDetails = cartItems.filter((item) =>
+          selectedItems.has(item.cartItemId)
+        );
 
         const orderSummary = {
           subtotal: getSubtotal(),
@@ -255,14 +242,9 @@ function Cart() {
           total: getTotal(),
         };
 
-        navigate("/checkout", {
-          state: { selectedItems: selectedItemsDetails, orderSummary },
-        });
+        navigate("/checkout", { state: { selectedItems: selectedItemsDetails, orderSummary } });
       })
-      .catch((err) => {
-        console.error("Cart: error fetching address", err);
-        toast.error("Unexpected error occurred. Please try again later");
-      });
+      .catch(() => toast.error("Unexpected error occurred. Please try again later"));
   };
 
   const handleConfirmDelete = () => {
@@ -270,44 +252,28 @@ function Cart() {
       axios
         .delete(`http://localhost:8080/api/cartItem/deleteCartItem/${itemToDelete}`)
         .then(() => {
-          setCartItem((prevItems) => prevItems.filter((item) => item.cartItemId !== itemToDelete));
+          setCartItem((prevItems) =>
+            prevItems.filter((item) => item.cartItemId !== itemToDelete)
+          );
           setOpenDialog(false);
           toast.success("Item removed from cart");
         })
-        .catch((err) => {
-          console.error("Error deleting item:", err);
-          setOpenDialog(false);
-          toast.error("Failed to delete item from cart");
-        });
+        .catch(() => toast.error("Failed to delete item from cart"));
     }
   };
 
-  const handleConfirmCreateAddress = () => {
-    navigate("/profile");
-  };
+  const handleConfirmCreateAddress = () => navigate("/profile");
 
-  const getSubtotal = () => {
-    return cartItems
+  const getSubtotal = () =>
+    cartItems
       .filter((item) => selectedItems.has(item.cartItemId))
       .reduce((total, item) => total + item.product.productPrice * item.quantity, 0)
       .toFixed(2);
-  };
 
-  const getTotal = () => {
-    const subtotal = parseFloat(getSubtotal());
-    if (subtotal == 0) {
-      return "0.00";
-    }
-    return (subtotal + 30).toFixed(2);
-  };
+  const getShippingFee = () => (parseFloat(getSubtotal()) === 0 ? "0.00" : "30.00");
 
-  const getShippingFee = () => {
-    const subtotal = parseFloat(getSubtotal());
-    if (subtotal == 0) {
-      return "0.00";
-    }
-    return "30.00";
-  };
+  const getTotal = () =>
+    parseFloat(getSubtotal()) === 0 ? "0.00" : (parseFloat(getSubtotal()) + 30).toFixed(2);
 
   return (
     <ThemeProvider theme={theme}>
@@ -339,9 +305,7 @@ function Cart() {
                   <TableHead>
                     <TableRow>
                       <TableCell align="right">Product</TableCell>
-                      <TableCell align="right" sx={{ marginLeft: "px" }}>
-                        Unit Price
-                      </TableCell>
+                      <TableCell align="right">Unit Price</TableCell>
                       <TableCell align="right">Quantity</TableCell>
                       <TableCell align="center">Actions</TableCell>
                     </TableRow>
