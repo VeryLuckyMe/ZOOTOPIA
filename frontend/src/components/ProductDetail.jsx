@@ -23,11 +23,19 @@ import { createTheme, ThemeProvider, styled } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     primary: {
+<<<<<<< HEAD
       main: "#8670ffff",
       light: "#2600ffff",
     },
     secondary: {
       main: "#3735b3ff",
+=======
+      main: "#8B4513",
+      light: "#D2B48C",
+    },
+    secondary: {
+      main: "#FFA500",
+>>>>>>> 5ce4f3c8c86000d4ef24d867a2b5052d291cd4f9
     },
     background: {
       default: "#cadbffff",

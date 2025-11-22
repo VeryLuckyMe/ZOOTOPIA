@@ -208,7 +208,11 @@ export default function Header({ username, role, userId }) {
                     display: "flex",
                     flexDirection: "column",
                     padding: "10px",
+<<<<<<< HEAD
                     backgroundColor: "#0471ffff",
+=======
+                    backgroundColor: "#FFFACD",
+>>>>>>> 5ce4f3c8c86000d4ef24d867a2b5052d291cd4f9
                   }}
                 >
                   <List>

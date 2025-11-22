@@ -29,6 +29,7 @@ import cart from "../assets/cart.png";
 const theme = createTheme({
   palette: {
     primary: {
+<<<<<<< HEAD
       main: '#8670ffff', // Rich Brown
       light: '#2600ffff', // Tan
     },
@@ -38,6 +39,17 @@ const theme = createTheme({
     background: {
       default: '#d2e1ffff', // Soft Cream
       paper: '#FFFFFF',
+=======
+      main: "#8B4513",
+      light: "#D2B48C",
+    },
+    secondary: {
+      main: "#FFA500",
+    },
+    background: {
+      default: "#FFF5E6",
+      paper: "#FFFFFF",
+>>>>>>> 5ce4f3c8c86000d4ef24d867a2b5052d291cd4f9
     },
   },
   typography: {
