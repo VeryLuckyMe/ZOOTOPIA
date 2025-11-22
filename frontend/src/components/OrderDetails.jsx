@@ -24,14 +24,14 @@ import paw1 from "../assets/paw1.png";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#8B4513",
-      light: "#D2B48C",
+      main: "#63a4ff", // Light Blue
+      light: "#95caff", // Even lighter
     },
     secondary: {
-      main: "#FFA500",
+      main: "#FFA500", // Orange for actions
     },
     background: {
-      default: "#FFF5E6",
+      default: "#e6f0ff", // Soft light blue background
       paper: "#FFFFFF",
     },
   },
