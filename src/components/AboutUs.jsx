@@ -184,9 +184,7 @@ const AboutUs = () => {
                   fontWeight: "normal",
                 }}
               >
-                At ZOOTOPIA, pets are family. Our mission is to provide top-quality products that make caring for your
-                pets simple and joyful. From healthy food to toys and grooming essentials, we've got everything to keep
-                your furry, feathered, or scaly friends happy.
+                ZOOTOPIA: Where Premium Pet Care Meets Unconditional Love. We deliver expertly curated, high-quality products that make pet parenting effortless and rewarding. From nutrient-rich foods to engaging toys and gentle grooming solutions, we provide the essentials that help your furry, feathered, or scaly family members live their best lives—because they deserve nothing less.
               </Typography>
             </Box>
           </Box>
