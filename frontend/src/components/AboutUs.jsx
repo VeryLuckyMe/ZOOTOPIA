@@ -1,49 +1,56 @@
 import React from "react";
-import { Box, Typography, Avatar, Grid, Container, createTheme, ThemeProvider, styled } from "@mui/material";
+import { Box, Typography, Avatar, Grid, Container, createTheme, ThemeProvider, styled, Card, CardContent } from "@mui/material";
 
 import animationImage from "../assets/homeanimation.gif";
 import dogcat from "../assets/dogcat.jpg";
 import mikel from "../assets/mikel.png";
 import carlos from "../assets/carlos.png";
 import clark from "../assets/clark.png";
-import petIcon from '../assets/peticon.png';
-import paw1 from '../assets/paw1.png';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#8670ffff',
-      light: '#2600ffff',
+      main: '#2E3B55',
+      light: '#4A5F8C',
     },
     secondary: {
-      main: '#4c3fffff',
+      main: '#FF6B35',
     },
     background: {
-      default: '#d2e1ffff',
+      default: '#F8FAFC',
       paper: '#FFFFFF',
     },
   },
   typography: {
-    fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    h1: {
+      fontWeight: 700,
+      fontSize: '3.5rem',
+    },
+    h2: {
+      fontWeight: 600,
+      fontSize: '2.5rem',
+    },
+    h4: {
+      fontWeight: 600,
+      fontSize: '1.5rem',
+    },
+    body1: {
+      fontSize: '1.1rem',
+      lineHeight: 1.7,
+    },
   },
   components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-          textTransform: 'none',
-          fontWeight: 600,
-        },
-      },
-    },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
-          boxShadow: '0 6px 12px rgba(0,0,0,0.1)',
-          transition: 'transform 0.3s ease',
+          borderRadius: 12,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+          transition: 'all 0.3s ease',
+          border: '1px solid rgba(0,0,0,0.05)',
           '&:hover': {
-            transform: 'translateY(-5px)',
+            transform: 'translateY(-8px)',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
           },
         },
       },
@@ -52,179 +59,192 @@ const theme = createTheme({
 });
 
 const PageWrapper = styled(Box)(({ theme }) => ({
-  background: `linear-gradient(135deg, ${theme.palette.primary.light}20, ${theme.palette.background.default})`,
+  background: theme.palette.background.default,
   minHeight: '100vh',
-  padding: theme.spacing(4),
+  padding: theme.spacing(6),
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  width: "96vw",
 }));
 
-const HeaderWrapper = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginBottom: theme.spacing(4),
-}));
-
-const PetIcon = styled('img')({
-  width: '60px',
-  height: '60px',
-  marginRight: '15px',
-  animation: 'float 3s ease-in-out infinite',
-  '@keyframes float': {
-    '0%, 100%': { transform: 'translateY(0)' },
-    '50%': { transform: 'translateY(-10px)' },
-  },
-});
-
-const PawPrint = styled('img')(({ theme }) => ({
-  position: 'absolute',
-  width: '100px',
-  height: 'auto',
-  opacity: 0.1,
-  zIndex: 0,
+const SectionContainer = styled(Container)(({ theme }) => ({
+  marginBottom: theme.spacing(8),
 }));
 
 const AboutUs = () => {
   return (
     <ThemeProvider theme={theme}>
       <PageWrapper>
-        {/* Welcome Section - Keeping the original structure */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: 5,
-            marginTop: -4,
-            backgroundColor: "#6b9affff",
-            padding: "2rem",
-            borderRadius: 2,
-            boxShadow: 3,
-            width: "100%",
-          }}
-        >
-          <Box
-            component="img"
-            src={animationImage}
-            alt="Welcome Animation"
+        <SectionContainer maxWidth="lg">
+          <Typography
+            variant="h1"
             sx={{
-              width: 430,
-              height: 430,
-              borderRadius: "50%",
-              boxShadow: 3,
-              marginRight: 3,
-            }}
-          />
-          <Box>
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: "bold",
-                fontFamily: "Comic Sans MS",
-                color: "#333",
-                fontSize: "3rem",
-              }}
-            >
-              About ZOOTOPIA!
-            </Typography>
-          </Box>
-        </Box>
-
-        <Container sx={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", padding: "40px 20px" }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              backgroundColor: "background.paper",
-              padding: "20px",
-              borderRadius: 4,
-              width: "80%",
-              boxShadow: 3,
-              position: 'relative',
-              overflow: 'hidden',
+              textAlign: "center",
+              marginBottom: 4,
+              background: 'linear-gradient(135deg, #2E3B55 0%, #4A5F8C 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              color: 'transparent',
             }}
           >
-            <PawPrint src={paw1} alt="Paw Print" sx={{ top: -20, right: -20 }} />
-            <Avatar
-              src={dogcat}
-              alt="Pet Image"
-              sx={{
-                width: 200,
-                height: 200,
-                marginRight: "20px",
-              }}
-            />
-            <Typography
-              variant="body1"
-              sx={{
-                color: "text.primary",
-                fontSize: "1.2rem",
-                lineHeight: "1.8",
-                textAlign: "left",
-              }}
-            >
-              At ZOOTOPIA, pets are family. Our mission is to provide top-quality products that make caring for your pets simple and joyful. From healthy food to toys and grooming essentials, we've got everything to keep your furry, feathered, or scaly friends happy.
-            </Typography>
-          </Box>
-        </Container>
+            About Us
+          </Typography>
 
-        <Container sx={{ padding: "40px 20px" }}>
+          <Card sx={{ mb: 6 }}>
+            <CardContent sx={{ p: 6 }}>
+              <Grid container spacing={6} alignItems="center">
+                <Grid item xs={12} md={4}>
+                  <Box
+                    component="img"
+                    src={animationImage}
+                    alt="Pet Care Animation"
+                    sx={{
+                      width: '100%',
+                      height: 'auto',
+                      borderRadius: 3,
+                      boxShadow: 3,
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} md={8}>
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      color: "primary.main",
+                      marginBottom: 3,
+                    }}
+                  >
+                    Welcome to Zootopia
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: "text.secondary" }}>
+                    At Zootopia, we believe pets are family. Our mission is to provide exceptional 
+                    products and services that enhance the lives of pets and their owners. With a 
+                    commitment to quality, safety, and innovation, we strive to be your trusted 
+                    partner in pet care.
+                  </Typography>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent sx={{ p: 6 }}>
+              <Grid container spacing={6} alignItems="center" flexDirection="row-reverse">
+                <Grid item xs={12} md={4}>
+                  <Avatar
+                    src={dogcat}
+                    alt="Our Mission"
+                    sx={{
+                      width: '100%',
+                      height: 'auto',
+                      maxWidth: 280,
+                      aspectRatio: '1',
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} md={8}>
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      color: "primary.main",
+                      marginBottom: 3,
+                    }}
+                  >
+                    Our Commitment
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: "text.secondary", mb: 3 }}>
+                    We are passionate pet lovers dedicated to providing the highest standard of care 
+                    for your furry companions. Our team meticulously selects every product to ensure 
+                    it meets our rigorous quality and safety standards.
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: "text.secondary" }}>
+                    From premium nutrition to engaging toys and essential grooming supplies, 
+                    we are committed to making pet ownership a rewarding and joyful experience 
+                    for every family.
+                  </Typography>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </SectionContainer>
+
+        <SectionContainer maxWidth="lg">
           <Typography
-            variant="h5"
+            variant="h2"
             sx={{
-              fontWeight: "bold",
               textAlign: "center",
-              marginBottom: "20px",
+              marginBottom: 8,
               color: "primary.main",
             }}
           >
-            Behind ZOOTOPIA
+            Our Team
           </Typography>
-          <Grid container spacing={3} justifyContent="center">
+
+          <Grid container spacing={4} justifyContent="center">
             {[
-              { name: "Clarence", email: "clarencekirk.macapobre@cit.edu", id: "22-6110-652", image: clark },
-              { name: "Carlos", email: "carlosrogel.lofranco@cit.edu", id: "22-1381-643", image: carlos },
-              { name: "Mikel", email: "mikeljosh.nicer@cit.edu", id: "22-672-178", image: mikel },
+              { name: "Clarence Kirk Macapobre", role: "Founder", email: "clarencekirk.macapobre@cit.edu", id: "22-6110-652", image: clark },
+              { name: "Carlos Rogel Lofranco", role: "Co-Founder", email: "carlosrogel.lofranco@cit.edu", id: "22-1381-643", image: carlos },
+              { name: "Mikel Josh Nicer", role: "Co-Founder", email: "mikeljosh.nicer@cit.edu", id: "22-672-178", image: mikel },
             ].map((member, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index} textAlign="center">
-                <Box sx={{ 
-                  boxShadow: 3, 
-                  padding: 2, 
-                  textAlign: "center",
-                  borderRadius: 4,
-                  backgroundColor: "background.paper",
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}>
-                  <PawPrint src={paw1} alt="Paw Print" sx={{ top: -20, right: -20 }} />
-                  <Avatar
-                    src={member.image}
-                    alt={member.name}
-                    sx={{
-                      width: 120,
-                      height: 120,
-                      margin: "0 auto",
-                      "&:hover": {
-                        transform: "scale(1.05)",
-                        transition: "0.3s",
-                      },
-                    }}
-                  />
-                  <Typography
-                    variant="body1"
-                    sx={{ fontWeight: "bold", marginTop: "10px", color: "primary.main" }}
-                  >
-                    {member.email}
-                  </Typography>
-                  <Typography variant="body2" sx={{color: "text.secondary"}}>{member.id}</Typography>
-                </Box>
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Card sx={{ height: '100%', textAlign: 'center' }}>
+                  <CardContent sx={{ p: 4 }}>
+                    <Avatar
+                      src={member.image}
+                      alt={member.name}
+                      sx={{
+                        width: 140,
+                        height: 140,
+                        margin: '0 auto 24px',
+                        border: '4px solid',
+                        borderColor: 'primary.light',
+                      }}
+                    />
+                    <Typography
+                      variant="h4"
+                      sx={{ 
+                        fontWeight: 600, 
+                        marginBottom: 1,
+                        color: "primary.main",
+                      }}
+                    >
+                      {member.name}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: "secondary.main",
+                        fontWeight: 500,
+                        marginBottom: 2,
+                      }}
+                    >
+                      {member.role}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "text.primary",
+                        marginBottom: 1,
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {member.email}
+                    </Typography>
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        color: "text.secondary",
+                        fontFamily: 'monospace',
+                      }}
+                    >
+                      {member.id}
+                    </Typography>
+                  </CardContent>
+                </Card>
               </Grid>
             ))}
           </Grid>
-        </Container>
+        </SectionContainer>
       </PageWrapper>
     </ThemeProvider>
   );
