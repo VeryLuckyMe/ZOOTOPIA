@@ -36,10 +36,46 @@ const slideIn = keyframes`
   }
 `;
 
+const fadeInDown = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
 export default function Header({ username, role, userId }) {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [profileImage, setProfileImage] = useState(defaultProfileImage);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  // Scroll effect for hide/show header
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down & past 100px - hide header
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up - show header
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollY]);
 
   useEffect(() => {
     if (userId) {
@@ -112,13 +148,22 @@ export default function Header({ username, role, userId }) {
         position="fixed"
         sx={{
           width: "100%",
-          backgroundColor: "#63a4ff",
-          boxShadow: "0 4px 20px rgba(99, 164, 255, 0.25)",
-          backdropFilter: "blur(10px)",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.2)",
+          backgroundColor: "rgba(99, 164, 255, 0.95)",
+          boxShadow: "0 8px 30px rgba(99, 164, 255, 0.3)",
+          backdropFilter: "blur(20px)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.3)",
+          transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease",
+          transform: isVisible ? "translateY(0)" : "translateY(-100%)",
+          opacity: isVisible ? 1 : 0,
+          animation: `${fadeInDown} 0.6s ease-out`,
+          zIndex: 1300,
         }}
       >
-        <Toolbar sx={{ minHeight: { xs: 64, md: 70 }, px: { xs: 2, md: 4 } }}>
+        <Toolbar sx={{ 
+          minHeight: { xs: 64, md: 70 }, 
+          px: { xs: 2, md: 4 },
+          transition: "all 0.3s ease",
+        }}>
           {/* Logo */}
           <Box
             sx={{
@@ -134,10 +179,11 @@ export default function Header({ username, role, userId }) {
               src={elogo}
               alt="Zootopia Logo"
               style={{ 
-                width: "200px", 
+                width: "180px",
                 height: "auto", 
                 marginRight: "auto",
                 filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.1))",
+                transition: "all 0.3s ease",
               }}
             />
           </Box>
@@ -156,10 +202,10 @@ export default function Header({ username, role, userId }) {
                 sx={{
                   color: "white",
                   textTransform: "none",
-                  fontSize: "16px",
+                  fontSize: "15px",
                   fontWeight: 500,
                   px: 2.5,
-                  py: 1,
+                  py: 0.8,
                   borderRadius: 2,
                   transition: "all 0.3s ease",
                   position: "relative",
@@ -170,7 +216,7 @@ export default function Header({ username, role, userId }) {
                   "&::after": {
                     content: '""',
                     position: "absolute",
-                    bottom: 8,
+                    bottom: 6,
                     left: "50%",
                     transform: "translateX(-50%) scaleX(0)",
                     width: "60%",
@@ -204,7 +250,7 @@ export default function Header({ username, role, userId }) {
                   sx={{
                     color: "white",
                     fontWeight: 600,
-                    fontSize: "14px",
+                    fontSize: "13px",
                     lineHeight: 1.2,
                   }}
                 >
@@ -214,7 +260,7 @@ export default function Header({ username, role, userId }) {
                   variant="caption"
                   sx={{
                     color: "rgba(255, 255, 255, 0.8)",
-                    fontSize: "12px",
+                    fontSize: "11px",
                   }}
                 >
                   {role === "ADMIN" ? "Administrator" : "Member"}
@@ -235,8 +281,8 @@ export default function Header({ username, role, userId }) {
                   src={profileImage}
                   alt={username}
                   sx={{
-                    width: 42,
-                    height: 42,
+                    width: 38,
+                    height: 38,
                     border: "3px solid white",
                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
                     cursor: "pointer",
@@ -252,10 +298,10 @@ export default function Header({ username, role, userId }) {
                 backgroundColor: "white",
                 color: "#63a4ff",
                 textTransform: "none",
-                fontSize: "16px",
+                fontSize: "15px",
                 fontWeight: 600,
-                px: 3,
-                py: 1,
+                px: 2.5,
+                py: 0.7,
                 borderRadius: 2,
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
                 transition: "all 0.3s ease",
@@ -446,7 +492,10 @@ export default function Header({ username, role, userId }) {
         </Box>
       </Drawer>
 
-      <Box sx={{ mt: { xs: 8, md: 9 } }} />
+      {/* Spacer to prevent content from being hidden behind fixed header */}
+      <Box sx={{ 
+        mt: { xs: 9, md: 8 }
+      }} />
     </>
   );
 }
