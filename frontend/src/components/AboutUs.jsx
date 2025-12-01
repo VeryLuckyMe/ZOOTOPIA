@@ -1,11 +1,13 @@
 import React from "react";
 import { Box, Typography, Avatar, Grid, Container, createTheme, ThemeProvider, styled, Card, CardContent } from "@mui/material";
+import { keyframes } from "@mui/system";
 
 import animationImage from "../assets/homeanimation.gif";
 import dogcat from "../assets/dogcat.jpg";
 import mikel from "../assets/mikel.png";
 import carlos from "../assets/carlos.png";
 import clark from "../assets/clark.png";
+import paw1 from "../assets/paw1.png";
 
 const theme = createTheme({
   palette: {
@@ -58,6 +60,47 @@ const theme = createTheme({
   },
 });
 
+const ScatteredPaws = ({ count = 12 }) => {
+  const positions = [
+    { top: "5%", left: "3%", delay: "0s" },
+    { top: "10%", right: "5%", delay: "0.5s" },
+    { bottom: "15%", left: "7%", delay: "1s" },
+    { bottom: "10%", right: "3%", delay: "1.5s" },
+    { top: "20%", left: "10%", delay: "2s" },
+    { bottom: "25%", right: "10%", delay: "2.5s" },
+    { top: "30%", left: "2%", delay: "3s" },
+    { bottom: "5%", right: "15%", delay: "3.5s" },
+    { top: "15%", right: "12%", delay: "4s" },
+    { bottom: "20%", left: "15%", delay: "4.5s" },
+    { top: "50%", right: "8%", delay: "5s" },
+    { bottom: "40%", left: "5%", delay: "5.5s" },
+  ];
+
+  return (
+    <>
+      {positions.slice(0, count).map((pos, index) => (
+        <Box
+          key={index}
+          component="img"
+          src={paw1}
+          alt="Paw Icon"
+          sx={{
+            position: "absolute",
+            width: "35px",
+            height: "35px",
+            opacity: 0.25,
+            zIndex: 0,
+            animation: `${pulse} 4s ease-in-out infinite`,
+            animationDelay: pos.delay,
+            pointerEvents: "none",
+            ...pos,
+          }}
+        />
+      ))}
+    </>
+  );
+};
+
 const PageWrapper = styled(Box)(({ theme }) => ({
   background: theme.palette.background.default,
   minHeight: '100vh',
@@ -65,16 +108,27 @@ const PageWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
+  position: "relative",   
+  overflow: "hidden",     
 }));
+
 
 const SectionContainer = styled(Container)(({ theme }) => ({
   marginBottom: theme.spacing(8),
 }));
 
+const pulse = keyframes`
+  0% { transform: scale(1); opacity: 0.25; }
+  50% { transform: scale(1.2); opacity: 0.35; }
+  100% { transform: scale(1); opacity: 0.25; }
+`;
+
+
 const AboutUs = () => {
   return (
     <ThemeProvider theme={theme}>
       <PageWrapper>
+      <ScatteredPaws count = {12} />
         <SectionContainer maxWidth="lg">
           <Typography
             variant="h1"
