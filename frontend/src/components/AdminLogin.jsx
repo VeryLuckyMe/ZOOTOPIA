@@ -75,7 +75,7 @@ const AdminLogin = () => {
         alignItems: "center",
         height: "100vh",
         width: "100vw",
-        backgroundColor: "#d2e1ffff",
+        backgroundColor: "#e7f5ff",
         position: "relative",
         overflow: "hidden",
       }}
@@ -163,13 +163,13 @@ const AdminLogin = () => {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "#8b4513", width: 60, height: 60 }}>
+          <Avatar sx={{ m: 1, bgcolor: "#4dabf5", width: 60, height: 60 }}>
             <PetsIcon fontSize="large" />
           </Avatar>
-          <Typography component="h1" variant="h4" sx={{ color: "#8b4513" }}>
-            Tails & Whiskers Admin
+          <Typography component="h1" variant="h4" sx={{ color: "#4dabf5" }}>
+            ZOOTOPIA Admin
           </Typography>
-          <Typography component="p" sx={{ mb: 2, color: "#6b4e16" }}>
+          <Typography component="p" sx={{ mb: 2, color: "#1c7ed6" }}>
             Welcome back! Manage your pet store with ease.
           </Typography>
           <Box
@@ -192,7 +192,7 @@ const AdminLogin = () => {
               onChange={(e) => setUser(e.target.value)}
               InputProps={{
                 startAdornment: (
-                  <AccountCircleIcon sx={{ mr: 1, color: "#8b4513" }} />
+                  <AccountCircleIcon sx={{ mr: 1, color: "#4dabf5" }} />
                 ),
               }}
               sx={{
@@ -213,7 +213,7 @@ const AdminLogin = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               InputProps={{
-                startAdornment: <VpnKeyIcon sx={{ mr: 1, color: "#8b4513" }} />,
+                startAdornment: <VpnKeyIcon sx={{ mr: 1, color: "#4dabf5" }} />,
               }}
               sx={{
                 backgroundColor: "white",
@@ -228,8 +228,8 @@ const AdminLogin = () => {
               sx={{
                 mt: 3,
                 mb: 2,
-                backgroundColor: "#8b4513",
-                "&:hover": { backgroundColor: "#6b4e16" },
+                backgroundColor: "#4dabf5",
+                "&:hover": { backgroundColor: "#339af0" },
                 color: "white",
               }}
             >
