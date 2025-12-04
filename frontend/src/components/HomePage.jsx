@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -11,20 +11,16 @@ import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
-import Slider from 'react-slick';
+import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
 import { keyframes } from '@mui/system';
-import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import { ChevronLeft, ChevronRight, CheckCircle, Star, ShoppingBag, Schedule } from '@mui/icons-material';
 
 import animationImage from '../assets/homeanimation.gif';
 import grooming from '../assets/grooming.png';
 import paw1 from '../assets/paw1.png';
-import petball from '../assets/petball.png';
-import catgroom from '../assets/catgroom.png';
 
-// Theme Configuration - Keeping Original Colors
+// Theme Configuration
 const theme = createTheme({
   palette: {
     primary: {
@@ -40,21 +36,36 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", "Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
+    h1: {
+      fontWeight: 700,
+      letterSpacing: '-0.02em',
+    },
+    h2: {
+      fontWeight: 700,
+      letterSpacing: '-0.01em',
+    },
+    h3: {
+      fontWeight: 600,
+      letterSpacing: '-0.01em',
+    },
+    body1: {
+      lineHeight: 1.7,
+    },
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 8,
           textTransform: 'none',
           fontWeight: 600,
-          padding: '12px 28px',
+          padding: '14px 32px',
           fontSize: '1rem',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'all 0.2s ease-in-out',
+          boxShadow: 'none',
           '&:hover': {
-            transform: 'translateY(-2px)',
-            boxShadow: '0 8px 20px rgba(134, 112, 255, 0.3)',
+            boxShadow: '0 4px 12px rgba(134, 112, 255, 0.2)',
           },
         },
       },
@@ -62,14 +73,22 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 20,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-          border: '1px solid rgba(134, 112, 255, 0.1)',
+          borderRadius: 16,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+          transition: 'all 0.3s ease-in-out',
+          border: '1px solid rgba(0, 0, 0, 0.06)',
           '&:hover': {
-            transform: 'translateY(-8px)',
-            boxShadow: '0 12px 40px rgba(134, 112, 255, 0.2)',
+            boxShadow: '0 8px 24px rgba(134, 112, 255, 0.12)',
+            transform: 'translateY(-4px)',
           },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          fontWeight: 600,
+          letterSpacing: '0.02em',
         },
       },
     },
@@ -77,15 +96,10 @@ const theme = createTheme({
 });
 
 // Animations
-const float = keyframes`
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
-`;
-
 const fadeInUp = keyframes`
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -93,12 +107,28 @@ const fadeInUp = keyframes`
   }
 `;
 
+const float = keyframes`
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+`;
+
 const pulse = keyframes`
   0%, 100% { transform: scale(1); opacity: 0.25; }
   50% { transform: scale(1.05); opacity: 0.4; }
 `;
 
-// Enhanced Scattered Paws Component
+const slideIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+`;
+
+// Scattered Paws Component
 const ScatteredPaws = ({ count = 12 }) => {
   const positions = [
     { top: '8%', left: '5%', delay: '0s' },
@@ -139,179 +169,251 @@ const ScatteredPaws = ({ count = 12 }) => {
   );
 };
 
-// Enhanced Custom Navigation Arrows with Icons
-const CustomNextArrow = ({ onClick }) => (
-  <Box
-    onClick={onClick}
-    sx={{
-      position: 'absolute',
-      right: { xs: '-15px', md: '-25px' },
-      top: '50%',
-      transform: 'translateY(-50%)',
-      zIndex: 10,
-      backgroundColor: theme.palette.primary.main,
-      color: 'white',
-      width: { xs: '44px', md: '52px' },
-      height: { xs: '44px', md: '52px' },
-      borderRadius: '50%',
-      boxShadow: '0 6px 20px rgba(134, 112, 255, 0.4)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      cursor: 'pointer',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      border: '2px solid white',
-      '&:hover': {
-        backgroundColor: theme.palette.primary.light,
-        transform: 'translateY(-50%) scale(1.15)',
-        boxShadow: '0 8px 25px rgba(134, 112, 255, 0.6)',
-      },
-      '&:active': {
-        transform: 'translateY(-50%) scale(1.05)',
-      },
-    }}
-  >
-    <ChevronRight 
+// Professional Product Card Component
+const ProductCard = ({ product, onProductClick }) => {
+  return (
+    <Card 
       sx={{ 
-        fontSize: { xs: '28px', md: '32px' },
-        fontWeight: 'bold',
-      }} 
-    />
-  </Box>
-);
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Product Type Badge */}
+      <Box sx={{ position: 'absolute', top: 16, left: 16, zIndex: 2 }}>
+        <Chip
+          label={product.productType}
+          size="small"
+          sx={{
+            backgroundColor: theme.palette.primary.main,
+            color: 'white',
+            fontWeight: 600,
+            fontSize: '0.7rem',
+          }}
+        />
+      </Box>
 
-const CustomPrevArrow = ({ onClick }) => (
-  <Box
-    onClick={onClick}
-    sx={{
-      position: 'absolute',
-      left: { xs: '-15px', md: '-25px' },
-      top: '50%',
-      transform: 'translateY(-50%)',
-      zIndex: 10,
-      backgroundColor: theme.palette.primary.main,
-      color: 'white',
-      width: { xs: '44px', md: '52px' },
-      height: { xs: '44px', md: '52px' },
-      borderRadius: '50%',
-      boxShadow: '0 6px 20px rgba(134, 112, 255, 0.4)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      cursor: 'pointer',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      border: '2px solid white',
-      '&:hover': {
-        backgroundColor: theme.palette.primary.light,
-        transform: 'translateY(-50%) scale(1.15)',
-        boxShadow: '0 8px 25px rgba(134, 112, 255, 0.6)',
-      },
-      '&:active': {
-        transform: 'translateY(-50%) scale(1.05)',
-      },
-    }}
-  >
-    <ChevronLeft 
-      sx={{ 
-        fontSize: { xs: '28px', md: '32px' },
-        fontWeight: 'bold',
-      }} 
-    />
-  </Box>
-);
+      {/* Rating Badge */}
+      <Box sx={{ position: 'absolute', top: 16, right: 16, zIndex: 2 }}>
+        <Box
+          sx={{
+            backgroundColor: 'white',
+            borderRadius: 2,
+            px: 1.5,
+            py: 0.5,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.5,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          }}
+        >
+          <Star sx={{ fontSize: 16, color: '#FFA726' }} />
+          <Typography variant="caption" fontWeight={600}>
+            {product.rating}
+          </Typography>
+        </Box>
+      </Box>
 
-// Services Data
-const services = [
-  {
-    name: 'Grooming Services',
-    image: grooming,
-    description: 'Professional grooming for your beloved pets',
-  },
-];
+      {/* Product Image */}
+      <Box
+        sx={{
+          position: 'relative',
+          paddingTop: '75%',
+          overflow: 'hidden',
+          backgroundColor: '#F8F9FE',
+        }}
+      >
+        <CardMedia
+          component="img"
+          image={product.productImage}
+          alt={product.productName}
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            height: '75%',
+            width: '75%',
+            objectFit: 'contain',
+            transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+            '&:hover': {
+              transform: 'translate(-50%, -50%) scale(1.1)',
+            },
+          }}
+        />
+      </Box>
 
-// Dummy Products Data
-const dummyProducts = [
-  {
-    productName: 'Premium Dog Food',
-    price: 25.99,
-    productImage: 'https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=400&h=300&fit=crop',
-    description: 'High-quality nutrition for your furry friend',
-    productType: 'Food'
-  },
-  {
-    productName: 'Cat Toy Set',
-    price: 15.50,
-    productImage: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop',
-    description: 'Interactive toys to keep your cat entertained',
-    productType: 'Toys'
-  },
-  {
-    productName: 'Pet Grooming Kit',
-    price: 35.75,
-    productImage: 'https://images.unsplash.com/photo-1591946614720-90a587da4a36?w=400&h=300&fit=crop',
-    description: 'Complete grooming set for pet care at home',
-    productType: 'Grooming'
-  },
-  {
-    productName: 'Comfort Pet Bed',
-    price: 45.99,
-    productImage: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=400&h=300&fit=crop',
-    description: 'Soft and comfortable bed for your pet',
-    productType: 'Bedding'
-  },
-  {
-    productName: 'Dog Training Leash',
-    price: 18.25,
-    productImage: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop',
-    description: 'Durable leash for training and walks',
-    productType: 'Accessories'
-  },
-  {
-    productName: 'Pet Dental Care Kit',
-    price: 22.99,
-    productImage: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=300&fit=crop',
-    description: 'Complete dental hygiene kit for pets',
-    productType: 'Health'
-  }
-];
+      <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 700,
+            mb: 1,
+            fontSize: '1.1rem',
+            minHeight: '2.5em',
+            color: theme.palette.text.primary,
+          }}
+        >
+          {product.productName}
+        </Typography>
+
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ 
+            mb: 3, 
+            flexGrow: 1,
+            fontSize: '0.9rem',
+            lineHeight: 1.6,
+          }}
+        >
+          {product.description.length > 100 
+            ? `${product.description.substring(0, 100)}...` 
+            : product.description}
+        </Typography>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 800,
+              color: theme.palette.primary.main,
+              fontSize: '1.5rem',
+            }}
+          >
+            ₱{product.price.toFixed(2)}
+          </Typography>
+        </Box>
+
+        <Button
+          variant="contained"
+          color="secondary"
+          fullWidth
+          startIcon={<ShoppingBag />}
+          onClick={(e) => {
+            e.stopPropagation();
+            onProductClick(product.id); // FIX: Pass only the product ID
+          }}
+          sx={{
+            py: 1.5,
+            fontWeight: 600,
+          }}
+        >
+          Go to Products
+        </Button>
+      </CardContent>
+    </Card>
+  );
+};
+
+// Carousel Navigation Arrows
+const CarouselArrow = ({ direction, onClick, disabled = false }) => {
+  const ArrowIcon = direction === 'next' ? ChevronRight : ChevronLeft;
+  
+  return (
+    <IconButton
+      onClick={onClick}
+      disabled={disabled}
+      sx={{
+        position: 'absolute',
+        [direction === 'next' ? 'right' : 'left']: { xs: '-15px', md: '-25px' },
+        top: '50%',
+        transform: 'translateY(-50%)',
+        zIndex: 10,
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+        width: { xs: '44px', md: '56px' },
+        height: { xs: '44px', md: '56px' },
+        '&:hover': {
+          backgroundColor: theme.palette.primary.light,
+          transform: 'translateY(-50%) scale(1.1)',
+        },
+        '&.Mui-disabled': {
+          backgroundColor: 'rgba(134, 112, 255, 0.3)',
+        },
+        boxShadow: '0 4px 12px rgba(134, 112, 255, 0.3)',
+      }}
+    >
+      <ArrowIcon sx={{ fontSize: { xs: '24px', md: '30px' } }} />
+    </IconButton>
+  );
+};
 
 // Stats Section Component
 const StatsSection = () => (
   <Box
     sx={{
-      background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-      borderRadius: 4,
-      padding: { xs: 5, md: 7 },
-      marginY: 8,
+      background: 'linear-gradient(135deg, #FFFFFF 0%, #F8F9FE 100%)',
+      borderRadius: 3,
+      padding: { xs: 5, md: 6 },
+      marginY: 10,
+      boxShadow: '0 4px 20px rgba(134, 112, 255, 0.08)',
+      border: '1px solid rgba(134, 112, 255, 0.1)',
       position: 'relative',
       overflow: 'hidden',
-      boxShadow: '0 8px 32px rgba(134, 112, 255, 0.25)',
-    }}
-  >
-    <Box
-      sx={{
+      '&::before': {
+        content: '""',
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
-        bottom: 0,
-        background: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.15) 0%, transparent 50%)',
-      }}
-    />
-    <Grid container spacing={4} sx={{ position: 'relative', zIndex: 1 }}>
+        height: '4px',
+        background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+      },
+    }}
+  >
+    <Grid container spacing={4}>
       {[
-        { number: '5000+', label: 'Happy Pets' },
-        { number: '500+', label: 'Products' },
-        { number: '50+', label: 'Expert Groomers' },
-        { number: '24/7', label: 'Customer Support' },
+        { number: '5,000+', label: 'Happy Customers', sublabel: 'And growing', icon: '😊' },
+        { number: '500+', label: 'Premium Products', sublabel: 'Carefully curated', icon: '⭐' },
+        { number: '50+', label: 'Expert Staff', sublabel: 'Certified professionals', icon: '👨‍⚕️' },
+        { number: '24/7', label: 'Support Available', sublabel: 'Always here for you', icon: '🕒' },
       ].map((stat, index) => (
         <Grid item xs={6} md={3} key={index}>
-          <Box sx={{ textAlign: 'center', color: 'white', py: 2 }}>
-            <Typography variant="h3" sx={{ fontWeight: 800, mb: 2, fontSize: { xs: '2rem', md: '2.5rem' } }}>
+          <Box 
+            sx={{ 
+              textAlign: 'center', 
+              py: 2,
+              animation: `${slideIn} 0.5s ease-out ${index * 0.1}s both`,
+            }}
+          >
+            <Box sx={{ fontSize: '2rem', mb: 1 }}>
+              {stat.icon}
+            </Box>
+            <Typography 
+              variant="h3" 
+              sx={{ 
+                fontWeight: 800, 
+                mb: 1, 
+                fontSize: { xs: '2rem', md: '2.5rem' },
+                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
               {stat.number}
             </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.95, fontWeight: 500, fontSize: { xs: '0.9rem', md: '1rem' } }}>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontWeight: 700,
+                mb: 0.5,
+                color: theme.palette.text.primary,
+              }}
+            >
               {stat.label}
+            </Typography>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: theme.palette.text.secondary,
+                fontSize: '0.875rem',
+              }}
+            >
+              {stat.sublabel}
             </Typography>
           </Box>
         </Grid>
@@ -323,36 +425,51 @@ const StatsSection = () => (
 const HomePage = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoSwiping, setIsAutoSwiping] = useState(true);
+  const autoSlideRef = useRef(null);
 
   useEffect(() => {
+    // Fetch products from backend
     const fetchProducts = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/product/getProduct');
-        if (Array.isArray(response.data) && response.data.length > 0) {
+        if (Array.isArray(response.data)) {
           const processedProducts = response.data.map((product) => ({
+            id: product._id,
             productName: product.productName || 'Unnamed Product',
             price: product.productPrice || 0,
             productImage: product.productImage || '/placeholder-image.png',
             description: product.description || 'No description available.',
             productType: product.productType || 'Uncategorized',
+            rating: product.rating || 4.5,
           }));
           setProducts(processedProducts);
-        } else {
-          // Use dummy products if backend returns empty array or no data
-          setProducts(dummyProducts);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
-        // Use dummy products if backend connection fails
-        setProducts(dummyProducts);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchProducts();
   }, []);
+
+  // Auto-swipe functionality
+  useEffect(() => {
+    if (!isAutoSwiping || products.length <= 3) return;
+
+    autoSlideRef.current = setInterval(() => {
+      setCurrentSlide((prev) => 
+        prev >= Math.max(1, products.length - 3) ? 0 : prev + 1
+      );
+    }, 5000); // Change slide every 5 seconds
+
+    return () => {
+      if (autoSlideRef.current) {
+        clearInterval(autoSlideRef.current);
+      }
+    };
+  }, [isAutoSwiping, products.length]);
 
   const handleBookNow = () => {
     navigate('/appointments');
@@ -362,42 +479,31 @@ const HomePage = () => {
     navigate('/products');
   };
 
-  // Use products from backend if available, otherwise use dummy products
-  const displayProducts = products.length > 0 ? products : dummyProducts;
-  const computedSlidesToShow = Math.min(3, Math.max(1, displayProducts.length || 1));
-
-  const sliderSettings = {
-    dots: true,
-    infinite: displayProducts.length > computedSlidesToShow,
-    speed: 600,
-    slidesToShow: computedSlidesToShow,
-    slidesToScroll: 1,
-    nextArrow: <CustomNextArrow />,
-    prevArrow: <CustomPrevArrow />,
-    autoplay: true,
-    autoplaySpeed: 4000,
-    pauseOnHover: true,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: Math.min(2, computedSlidesToShow),
-          slidesToScroll: 1,
-          nextArrow: <CustomNextArrow />,
-          prevArrow: <CustomPrevArrow />,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          nextArrow: <CustomNextArrow />,
-          prevArrow: <CustomPrevArrow />,
-        },
-      },
-    ],
+  const handleProductClick = () => {
+    navigate(`/products`);
   };
+
+  const nextSlide = () => {
+    if (products.length > 3) {
+      setCurrentSlide((prev) => 
+        prev >= Math.max(1, products.length - 3) ? 0 : prev + 1
+      );
+    }
+  };
+
+  const prevSlide = () => {
+    if (products.length > 3) {
+      setCurrentSlide((prev) => 
+        prev <= 0 ? Math.max(1, products.length - 3) : prev - 1
+      );
+    }
+  };
+
+  // Handle mouse enter/leave for auto-swipe pause
+  const handleMouseEnter = () => setIsAutoSwiping(false);
+  const handleMouseLeave = () => setIsAutoSwiping(true);
+
+  const visibleProducts = products.slice(currentSlide, currentSlide + 3);
 
   return (
     <ThemeProvider theme={theme}>
@@ -415,12 +521,11 @@ const HomePage = () => {
         {/* Hero Section */}
         <Box
           sx={{
-            background: '#6b9affff',
+            background: 'linear-gradient(135deg, #6b9affff 0%, #8670ffff 100%)',
             position: 'relative',
             overflow: 'hidden',
-            paddingY: { xs: 8, md: 12 },
-            marginBottom: 10,
-            boxShadow: '0 8px 32px rgba(107, 154, 255, 0.3)',
+            paddingY: { xs: 10, md: 14 },
+            marginBottom: 8,
           }}
         >
           <Box
@@ -433,43 +538,48 @@ const HomePage = () => {
               background: 'radial-gradient(circle at 80% 20%, rgba(255,255,255,0.2) 0%, transparent 50%)',
             }}
           />
-          
           <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
             <Grid container spacing={6} alignItems="center">
               <Grid item xs={12} md={6}>
-                <Box
-                  sx={{
-                    animation: `${fadeInUp} 1s ease-out`,
-                    py: 2,
-                  }}
-                >
+                <Box sx={{ animation: `${fadeInUp} 0.8s ease-out` }}>
+                  <Typography
+                    variant="overline"
+                    sx={{
+                      color: 'rgba(255,255,255,0.9)',
+                      fontWeight: 600,
+                      fontSize: '0.875rem',
+                      letterSpacing: '0.1em',
+                      mb: 2,
+                      display: 'block',
+                    }}
+                  >
+                    PREMIUM PET CARE SERVICES
+                  </Typography>
                   <Typography
                     variant="h2"
                     sx={{
                       color: '#FFFFFF',
-                      mb: 4,
+                      mb: 3,
                       fontWeight: 800,
                       fontSize: { xs: '2.5rem', md: '3.5rem' },
-                      textShadow: '0 2px 20px rgba(0,0,0,0.15)',
-                      letterSpacing: '-0.02em',
                       lineHeight: 1.2,
                     }}
                   >
                     Welcome to Zootopia!
                   </Typography>
                   <Typography
-                    variant="h5"
+                    variant="h6"
                     sx={{
                       color: 'rgba(255,255,255,0.95)',
                       mb: 5,
                       fontWeight: 400,
                       lineHeight: 1.6,
-                      fontSize: { xs: '1.1rem', md: '1.3rem' },
+                      fontSize: { xs: '1.1rem', md: '1.25rem' },
                     }}
                   >
                     Your trusted partner for premium pet care, professional grooming services, and quality products for your beloved companions
                   </Typography>
-                  <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                     <Button
                       variant="contained"
                       size="large"
@@ -477,29 +587,34 @@ const HomePage = () => {
                       sx={{
                         backgroundColor: 'white',
                         color: theme.palette.primary.main,
+                        px: 4,
+                        fontWeight: 700,
                         '&:hover': {
-                          backgroundColor: 'rgba(255,255,255,0.9)',
+                          backgroundColor: 'rgba(255,255,255,0.95)',
                         },
                       }}
                     >
-                      Shop Products
+                      Browse Products
                     </Button>
                     <Button
                       variant="outlined"
                       size="large"
                       onClick={handleBookNow}
+                      startIcon={<Schedule />}
                       sx={{
                         borderColor: 'white',
                         color: 'white',
+                        px: 4,
                         borderWidth: 2,
+                        fontWeight: 700,
                         '&:hover': {
                           borderColor: 'white',
                           borderWidth: 2,
-                          backgroundColor: 'rgba(255,255,255,0.15)',
+                          backgroundColor: 'rgba(255,255,255,0.1)',
                         },
                       }}
                     >
-                      Book Grooming
+                      Book Service
                     </Button>
                   </Box>
                 </Box>
@@ -509,8 +624,9 @@ const HomePage = () => {
                   sx={{
                     display: 'flex',
                     justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100%',
                     animation: `${float} 6s ease-in-out infinite`,
-                    py: 4,
                   }}
                 >
                   <Box
@@ -522,7 +638,7 @@ const HomePage = () => {
                       height: { xs: 280, md: 400 },
                       borderRadius: '50%',
                       boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
-                      border: '6px solid rgba(255,255,255,0.3)',
+                      border: '8px solid rgba(255,255,255,0.3)',
                     }}
                   />
                 </Box>
@@ -531,369 +647,323 @@ const HomePage = () => {
           </Container>
         </Box>
 
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, pb: 12 }}>
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, pb: 10 }}>
           {/* Stats Section */}
           <StatsSection />
 
-          {/* Products Section */}
+          {/* Featured Products Section - Enhanced with Auto-Swipe */}
           <Box sx={{ mb: 12 }}>
-            <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Box sx={{ textAlign: 'center', mb: 6 }}>
               <Typography
                 variant="h3"
                 sx={{
-                  fontWeight: 700,
-                  mb: 3,
-                  color: theme.palette.primary.main,
+                  fontWeight: 800,
+                  mb: 2,
+                  background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
                   fontSize: { xs: '2rem', md: '2.5rem' },
-                  letterSpacing: '-0.01em',
                 }}
               >
-                Our Featured Products
+                Featured Products
               </Typography>
               <Typography 
-                variant="h6" 
+                variant="body1" 
                 color="text.secondary" 
                 sx={{ 
                   maxWidth: 600, 
-                  mx: 'auto', 
-                  fontWeight: 400,
-                  mb: 2,
-                  lineHeight: 1.6,
+                  mx: 'auto',
+                  fontSize: '1.1rem',
+                  mb: 1,
                 }}
               >
-                Discover our carefully curated selection of premium pet products for your furry friends
+                Discover our carefully curated selection of premium pet products
               </Typography>
               <Divider sx={{ 
                 mt: 4, 
-                maxWidth: 100, 
+                width: 80, 
                 mx: 'auto', 
-                borderWidth: 2, 
+                borderWidth: 3, 
                 borderColor: theme.palette.primary.main,
-                height: 4,
                 borderRadius: 2,
               }} />
             </Box>
 
-            {loading ? (
+            {products.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 8 }}>
                 <Typography variant="h6" color="text.secondary">
                   Loading products...
                 </Typography>
               </Box>
             ) : (
-              <Box sx={{ 
-                position: 'relative', 
-                px: { xs: 4, md: 8 }, 
-                mb: 4,
-                '& .slick-slider': {
-                  position: 'relative',
-                }
-              }}>
-                <Slider {...sliderSettings}>
-                  {displayProducts.map((product, index) => (
-                    <Box key={index} sx={{ px: 2, pb: 1 }}>
-                      <Card
+              <Box 
+                sx={{ 
+                  position: 'relative', 
+                  px: { xs: 0, md: 4 },
+                  mx: 'auto',
+                  maxWidth: '1400px',
+                }}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                {/* Carousel Indicators */}
+                {products.length > 3 && (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 4 }}>
+                    {Array.from({ length: Math.max(1, products.length - 2) }).map((_, index) => (
+                      <Box
+                        key={index}
+                        onClick={() => setCurrentSlide(index)}
                         sx={{
-                          height: '100%',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          position: 'relative',
-                          overflow: 'visible',
-                          mx: 1,
+                          width: 10,
+                          height: 10,
+                          borderRadius: '50%',
+                          backgroundColor: index === currentSlide 
+                            ? theme.palette.primary.main 
+                            : 'rgba(134, 112, 255, 0.2)',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            backgroundColor: theme.palette.primary.light,
+                          },
+                        }}
+                      />
+                    ))}
+                  </Box>
+                )}
+
+                {/* Products Grid */}
+                <Grid container spacing={4} sx={{ minHeight: '500px' }}>
+                  {visibleProducts.map((product, index) => (
+                    <Grid item xs={12} sm={6} md={4} key={product.id}>
+                      <Box
+                        onClick={() => handleProductClick(product.id)} // FIX: Pass only the product ID
+                        sx={{ 
+                          cursor: 'pointer',
+                          animation: `${fadeInUp} 0.5s ease-out ${index * 0.1}s both`,
                         }}
                       >
-                        <Box
-                          sx={{
-                            position: 'relative',
-                            paddingTop: '75%',
-                            overflow: 'hidden',
-                            backgroundColor: '#F8F9FE',
-                          }}
-                        >
-                          <CardMedia
-                            component="img"
-                            image={product.productImage}
-                            alt={product.productName}
-                            sx={{
-                              position: 'absolute',
-                              top: '50%',
-                              left: '50%',
-                              transform: 'translate(-50%, -50%)',
-                              height: '80%',
-                              width: '80%',
-                              objectFit: 'contain',
-                              transition: 'transform 0.4s ease',
-                              '&:hover': {
-                                transform: 'translate(-50%, -50%) scale(1.08)',
-                              },
-                            }}
-                          />
-                        </Box>
-                        <CardContent sx={{ flexGrow: 1, p: 4 }}>
-                          <Typography
-                            variant="overline"
-                            sx={{
-                              color: theme.palette.secondary.main,
-                              fontWeight: 600,
-                              fontSize: '0.75rem',
-                              letterSpacing: '0.1em',
-                              display: 'block',
-                              mb: 1,
-                            }}
-                          >
-                            {product.productType}
-                          </Typography>
-                          <Typography
-                            variant="h6"
-                            sx={{
-                              fontWeight: 600,
-                              mb: 2,
-                              mt: 1,
-                              minHeight: '3em',
-                              color: theme.palette.text.primary,
-                              lineHeight: 1.4,
-                            }}
-                          >
-                            {product.productName}
-                          </Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 3 }}>
-                            <Typography
-                              variant="h5"
-                              sx={{
-                                fontWeight: 700,
-                                color: theme.palette.primary.main,
-                              }}
-                            >
-                              ₱{product.price.toFixed(2)}
-                            </Typography>
-                          </Box>
-                          <Button
-                            variant="contained"
-                            color="secondary"
-                            fullWidth
-                            onClick={handleGoToProducts}
-                            sx={{ mt: 2 }}
-                          >
-                            View Product
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    </Box>
+                        <ProductCard 
+                          product={product}
+                          onProductClick={handleProductClick}
+                        />
+                      </Box>
+                    </Grid>
                   ))}
-                </Slider>
+                </Grid>
+
+                {/* Navigation Arrows */}
+                {products.length > 3 && (
+                  <>
+                    <CarouselArrow 
+                      direction="prev" 
+                      onClick={prevSlide}
+                      disabled={currentSlide === 0}
+                    />
+                    <CarouselArrow 
+                      direction="next" 
+                      onClick={nextSlide}
+                      disabled={currentSlide >= Math.max(1, products.length - 3)}
+                    />
+                  </>
+                )}
               </Box>
             )}
           </Box>
 
           {/* Services Section */}
           <Box sx={{ mb: 12 }}>
-            <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Box sx={{ textAlign: 'center', mb: 6 }}>
               <Typography
                 variant="h3"
                 sx={{
-                  fontWeight: 700,
-                  mb: 3,
-                  color: theme.palette.primary.main,
+                  fontWeight: 800,
+                  mb: 2,
+                  background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
                   fontSize: { xs: '2rem', md: '2.5rem' },
-                  letterSpacing: '-0.01em',
                 }}
               >
-                Our Premium Services
+                Professional Grooming Services
               </Typography>
               <Typography 
-                variant="h6" 
+                variant="body1" 
                 color="text.secondary" 
                 sx={{ 
                   maxWidth: 600, 
-                  mx: 'auto', 
-                  fontWeight: 400,
-                  mb: 2,
-                  lineHeight: 1.6,
+                  mx: 'auto',
+                  fontSize: '1.1rem',
                 }}
               >
-                Expert care and professional grooming for your beloved companions
+                Expert care delivered with compassion and professionalism
               </Typography>
-              <Divider sx={{ 
-                mt: 4, 
-                maxWidth: 100, 
-                mx: 'auto', 
-                borderWidth: 2, 
-                borderColor: theme.palette.primary.main,
-                height: 4,
-                borderRadius: 2,
-              }} />
             </Box>
 
-            <Grid container spacing={4} alignItems="stretch">
+            <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <Card
                   sx={{
                     height: '100%',
-                    background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-                    color: 'white',
+                    p: 4,
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
-                    p: 5,
+                    background: 'linear-gradient(135deg, #FFFFFF 0%, #F8F9FE 100%)',
                   }}
                 >
-                  <Typography variant="h5" sx={{ fontWeight: 700, mb: 4 }}>
-                    Why Choose Zootopia?
+                  <Typography variant="h5" sx={{ fontWeight: 800, mb: 3, color: theme.palette.primary.main }}>
+                    Why Choose Our Services
                   </Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                     {[
-                      '✓ Certified professional groomers with years of experience',
-                      '✓ Premium quality products for your pets',
-                      '✓ Comfortable & safe environment',
-                      '✓ Personalized pet care plans',
+                      'Certified and experienced professional groomers',
+                      'Premium quality products and equipment',
+                      'Safe, clean, and comfortable facilities',
+                      'Personalized care plans for each pet',
+                      'Emergency veterinary care available',
+                      'Satisfaction guaranteed',
                     ].map((item, idx) => (
-                      <Typography key={idx} variant="body1" sx={{ fontSize: '1.05rem', lineHeight: 1.6 }}>
-                        {item}
-                      </Typography>
+                      <Box key={idx} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                        <CheckCircle sx={{ color: theme.palette.primary.main, fontSize: 24, mt: 0.2 }} />
+                        <Typography variant="body1" sx={{ flex: 1, fontWeight: 500 }}>
+                          {item}
+                        </Typography>
+                      </Box>
                     ))}
                   </Box>
                 </Card>
               </Grid>
 
-              {services.map((service, index) => (
-                <Grid item xs={12} md={6} key={index}>
-                  <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                    <Box sx={{ position: 'relative', paddingTop: '56.25%', overflow: 'hidden' }}>
-                      <CardMedia
-                        component="img"
-                        image={service.image}
-                        alt={service.name}
-                        sx={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          transition: 'transform 0.5s ease',
-                          '&:hover': {
-                            transform: 'scale(1.05)',
-                          },
-                        }}
-                      />
-                    </Box>
-                    <CardContent sx={{ flexGrow: 1, p: 5 }}>
-                      <Typography 
-                        variant="h5" 
-                        sx={{ 
-                          fontWeight: 700, 
-                          mb: 3,
-                          color: theme.palette.primary.main,
-                        }}
-                      >
-                        {service.name}
-                      </Typography>
-                      <Typography 
-                        variant="body1" 
-                        color="text.secondary" 
-                        sx={{ 
-                          mb: 4, 
-                          fontSize: '1.05rem', 
-                          lineHeight: 1.7 
-                        }}
-                      >
-                        {service.description}
-                      </Typography>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        size="large"
-                        fullWidth
-                        onClick={handleBookNow}
-                      >
-                        Book Appointment
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
+              <Grid item xs={12} md={6}>
+                <Card sx={{ height: '100%', overflow: 'hidden' }}>
+                  <Box
+                    component="img"
+                    src={grooming}
+                    alt="Grooming Services"
+                    sx={{
+                      width: '100%',
+                      height: 280,
+                      objectFit: 'cover',
+                      transition: 'transform 0.5s ease',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                      },
+                    }}
+                  />
+                  <CardContent sx={{ p: 4 }}>
+                    <Typography 
+                      variant="h5" 
+                      sx={{ 
+                        fontWeight: 800, 
+                        mb: 2,
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      Professional Grooming
+                    </Typography>
+                    <Typography 
+                      variant="body1" 
+                      color="text.secondary" 
+                      sx={{ mb: 3, lineHeight: 1.7 }}
+                    >
+                      Our certified groomers provide top-quality services tailored to your pets specific needs, 
+                      ensuring they look and feel their best in a safe and comfortable environment.
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      size="large"
+                      fullWidth
+                      startIcon={<Schedule />}
+                      onClick={handleBookNow}
+                      sx={{
+                        py: 1.5,
+                        fontWeight: 700,
+                      }}
+                    >
+                      Schedule Appointment
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
             </Grid>
           </Box>
 
           {/* CTA Section */}
           <Box
             sx={{
-              background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-              borderRadius: 4,
+              background: 'linear-gradient(135deg, #FFFFFF 0%, #F8F9FE 100%)',
+              borderRadius: 3,
               padding: { xs: 6, md: 8 },
               textAlign: 'center',
+              boxShadow: '0 4px 20px rgba(134, 112, 255, 0.12)',
+              border: `2px solid ${theme.palette.primary.main}`,
               position: 'relative',
               overflow: 'hidden',
-              boxShadow: '0 8px 32px rgba(134, 112, 255, 0.25)',
-            }}
-          >
-            <Box
-              sx={{
+              '&::before': {
+                content: '""',
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 right: 0,
-                bottom: 0,
-                background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15) 0%, transparent 70%)',
+                height: '4px',
+                background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+              },
+            }}
+          >
+            <Typography 
+              variant="h4" 
+              sx={{ 
+                mb: 2, 
+                fontWeight: 800, 
+                fontSize: { xs: '1.75rem', md: '2.125rem' },
+                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
               }}
-            />
-            <Box sx={{ position: 'relative', zIndex: 1, py: 2 }}>
-              <Typography 
-                variant="h4" 
+            >
+              Ready to Get Started?
+            </Typography>
+            <Typography 
+              variant="body1" 
+              color="text.secondary"
+              sx={{ 
+                mb: 4,
+                fontSize: '1.1rem',
+                maxWidth: 600,
+                mx: 'auto',
+              }}
+            >
+              Join thousands of satisfied pet owners who trust Zootopia for their pet care needs
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={handleGoToProducts}
                 sx={{ 
-                  color: 'white', 
-                  mb: 3, 
-                  fontWeight: 700, 
-                  fontSize: { xs: '1.75rem', md: '2.125rem' },
-                  lineHeight: 1.3,
+                  px: 4,
+                  fontWeight: 700,
                 }}
               >
-                Ready to Give Your Pet the Best Care?
-              </Typography>
-              <Typography 
-                variant="h6" 
+                Shop Products
+              </Button>
+              <Button
+                variant="outlined"
+                size="large"
+                onClick={handleBookNow}
+                startIcon={<Schedule />}
                 sx={{ 
-                  color: 'rgba(255,255,255,0.95)', 
-                  mb: 5, 
-                  fontWeight: 400,
-                  lineHeight: 1.6,
+                  px: 4,
+                  fontWeight: 700,
+                  borderWidth: 2,
                 }}
               >
-                Join thousands of happy pet owners who trust Zootopia
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={handleGoToProducts}
-                  sx={{
-                    backgroundColor: 'white',
-                    color: theme.palette.primary.main,
-                    '&:hover': {
-                      backgroundColor: 'rgba(255,255,255,0.9)',
-                    },
-                  }}
-                >
-                  Explore Products
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="large"
-                  onClick={handleBookNow}
-                  sx={{
-                    borderColor: 'white',
-                    color: 'white',
-                    borderWidth: 2,
-                    '&:hover': {
-                      borderColor: 'white',
-                      borderWidth: 2,
-                      backgroundColor: 'rgba(255,255,255,0.15)',
-                    },
-                  }}
-                >
-                  Schedule Service
-                </Button>
-              </Box>
+                Book Service
+              </Button>
             </Box>
           </Box>
         </Container>
