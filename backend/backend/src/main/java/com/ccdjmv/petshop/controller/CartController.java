@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ccdjmv.petshop.entity.CartEntity;
 import com.ccdjmv.petshop.service.CartService;
+import java.util.List;
+import com.ccdjmv.petshop.entity.CartEntity.CartItem;
 
 @RestController
 @RequestMapping(method = RequestMethod.GET, path="/api/cart")
@@ -57,5 +59,26 @@ public class CartController {
 	@DeleteMapping("/deleteCartDetails/{cartId}")
 	public String deleteCart(@PathVariable Long cartId) {
 		return cartServ.deleteCart(cartId);
+	}
+
+	// Cart-item endpoints (migrated from CartItemController)
+	@PostMapping("/{cartId}/items")
+	public CartEntity addItemToCart(@PathVariable Long cartId, @RequestParam Long productId, @RequestParam int quantity) {
+		return cartServ.addItemToCart(cartId, productId, quantity);
+	}
+
+	@GetMapping("/{cartId}/items")
+	public List<CartItem> getCartItems(@PathVariable Long cartId) {
+		return cartServ.getCartItems(cartId);
+	}
+
+	@PutMapping("/{cartId}/items")
+	public CartEntity updateItemInCart(@PathVariable Long cartId, @RequestParam Long productId, @RequestParam int quantity) {
+		return cartServ.updateItemInCart(cartId, productId, quantity);
+	}
+
+	@DeleteMapping("/{cartId}/items")
+	public String deleteItemFromCart(@PathVariable Long cartId, @RequestParam Long productId) {
+		return cartServ.deleteItemFromCart(cartId, productId);
 	}
 }

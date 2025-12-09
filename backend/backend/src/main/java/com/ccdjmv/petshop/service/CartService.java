@@ -2,7 +2,8 @@ package com.ccdjmv.petshop.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,5 +70,83 @@ public class CartService {
 			msg = cartId + " NOT found";
 		}
 		return msg;
+	}
+
+	// Cart-item operations (migrated from CartItemService)
+	public CartEntity addItemToCart(Long cartId, Long productId, int quantity) {
+		if (quantity <= 0) {
+			throw new IllegalArgumentException("Quantity must be greater than 0");
+		}
+		CartEntity cart = cartRepo.findById(cartId).orElseThrow(() ->
+				new NoSuchElementException("Cart " + cartId + " not found"));
+
+		List<CartEntity.CartItem> items = cart.getCartItems();
+		if (items == null) {
+			items = new ArrayList<>();
+		}
+
+		CartEntity.CartItem found = null;
+		for (CartEntity.CartItem ci : items) {
+			if (productId.equals(ci.getProductId())) {
+				found = ci;
+				break;
+			}
+		}
+		if (found != null) {
+			found.setQuantity(found.getQuantity() + quantity);
+			found.setLastUpdated(LocalDateTime.now());
+		} else {
+			items.add(new CartEntity.CartItem(productId, quantity));
+		}
+		cart.setCartItems(items);
+		return cartRepo.save(cart);
+	}
+
+	public List<CartEntity.CartItem> getCartItems(Long cartId) {
+		CartEntity cart = cartRepo.findById(cartId).orElseThrow(() ->
+				new NoSuchElementException("Cart " + cartId + " not found"));
+		return cart.getCartItems();
+	}
+
+	public CartEntity updateItemInCart(Long cartId, Long productId, int quantity) {
+		try {
+			CartEntity cart = cartRepo.findById(cartId).orElseThrow(() ->
+					new NoSuchElementException("Cart " + cartId + " not found"));
+			List<CartEntity.CartItem> items = cart.getCartItems();
+			if (items == null) items = new ArrayList<>();
+			CartEntity.CartItem found = null;
+			for (CartEntity.CartItem ci : items) {
+				if (productId.equals(ci.getProductId())) {
+					found = ci;
+					break;
+				}
+			}
+			if (found == null) {
+				throw new NoSuchElementException("CartItem for product " + productId + " not found");
+			}
+			found.setQuantity(quantity);
+			found.setLastUpdated(LocalDateTime.now());
+			cart.setCartItems(items);
+			return cartRepo.save(cart);
+		} catch (NoSuchElementException nex) {
+			throw nex;
+		}
+	}
+
+	public String deleteItemFromCart(Long cartId, Long productId) {
+		CartEntity cart = cartRepo.findById(cartId).orElseThrow(() ->
+				new NoSuchElementException("Cart " + cartId + " not found"));
+		List<CartEntity.CartItem> items = cart.getCartItems();
+		if (items == null || items.isEmpty()) {
+			return "No items in cart";
+		}
+		boolean removed = items.removeIf(ci -> productId.equals(ci.getProductId()));
+		if (removed) {
+			cart.setCartItems(items);
+			cartRepo.save(cart);
+			return "CartItem removed";
+		} else {
+			return "CartItem not found";
+		}
 	}
 }

@@ -27,9 +27,6 @@ public class ProductEntity {
     @JsonManagedReference("product-productreview")
     private List<ProductReviewEntity> productreview;
     
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<CartItemEntity> cartItems;
     
     // Constructors
     public ProductEntity() {
@@ -38,8 +35,7 @@ public class ProductEntity {
     }
 
 	public ProductEntity(int productID, String description, double productPrice, String productName, String productType,
-			int quantity, int quantitySold, String productImage, List<ProductReviewEntity> productreview,
-			List<CartItemEntity> cartItems) {
+			int quantity, int quantitySold, String productImage, List<ProductReviewEntity> productreview) {
 		super();
 		ProductID = productID;
 		this.description = description;
@@ -50,7 +46,6 @@ public class ProductEntity {
 		this.quantitySold = quantitySold;
 		this.productImage = productImage;
 		this.productreview = productreview;
-		this.cartItems = cartItems;
 	}
 
 	public int getProductID() {
@@ -125,13 +120,7 @@ public class ProductEntity {
 		this.productreview = productreview;
 	}
 
-	public List<CartItemEntity> getCartItems() {
-		return cartItems;
-	}
-
-	public void setCartItems(List<CartItemEntity> cartItems) {
-		this.cartItems = cartItems;
-	}
+    
 
 	
 }
