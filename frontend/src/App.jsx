@@ -25,6 +25,7 @@ import RateProduct from "./components/RateProduct";
 import OrderList from "./components/Orders";
 import OrderDetails from "./components/OrderDetails";
 import { AuthProvider } from "./components/AuthProvider";
+import ProductList from './components/ProductList';
 
 function Layout({ children, username, role }) {
   return (

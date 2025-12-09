@@ -142,39 +142,54 @@ function Cart() {
   const [openNoAddressDialog, setNoAddressDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [userId, setUserId] = useState(localStorage.getItem("id"));
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const getCartItems = () => {
-    axios
-      .get(`http://localhost:8080/api/cart/getCartById/${userId}`)
-      .then((res) => {
-        const updatedCartItems = res.data.cartItems.map((item) => {
-          if (item.quantity > item.product.quantity) {
-            axios
-              .put(
-                `http://localhost:8080/api/cartItem/systemUpdateCartItem/${item.cartItemId}`,
-                { quantity: item.product.quantity }
-              )
-              .catch((err) => console.error("Error updating quantity:", err));
+  const getCartItems = async () => {
+    try {
+      setLoading(true);
+      const cartRes = await axios.get(`http://localhost:8080/api/cart/getCartById/${userId}`);
+      const cartItemsData = cartRes.data.cartItems || [];
 
+      // Fetch product details for each cart item
+      const itemsWithProducts = await Promise.all(
+        cartItemsData.map(async (item) => {
+          try {
+            const productRes = await axios.get(
+              `http://localhost:8080/api/product/getProduct/${item.productId}`
+            );
             return {
               ...item,
-              quantity: item.product.quantity,
+              product: productRes.data,
+            };
+          } catch (err) {
+            console.error(`Error fetching product ${item.productId}:`, err);
+            return {
+              ...item,
+              product: {
+                productID: item.productId,
+                productName: "Product not found",
+                productPrice: 0,
+                quantity: 0,
+                productImage: "",
+              },
             };
           }
-          return item;
-        });
+        })
+      );
 
-        const sortedCartItems = updatedCartItems.sort(
-          (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
-        );
+      const sortedCartItems = itemsWithProducts.sort(
+        (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
+      );
 
-        setCartItem(sortedCartItems);
-      })
-      .catch((err) => {
-        console.error("Error fetching cart items", err);
-        toast.error("Error fetching cart items");
-      });
+      setCartItem(sortedCartItems);
+    } catch (err) {
+      console.error("Error fetching cart items", err);
+      toast.error("Error fetching cart items");
+      setCartItem([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

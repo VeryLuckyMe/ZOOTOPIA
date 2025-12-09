@@ -85,8 +85,8 @@ const ProductDetail = () => {
 
   // Add to cart
   const handleAddToCart = async () => {
-    const cartId = localStorage.getItem("id");
-    if (!cartId) {
+    const userId = localStorage.getItem("id");
+    if (!userId) {
       toast.warning("You must be logged in to add items to the cart!");
       return;
     }
@@ -95,38 +95,27 @@ const ProductDetail = () => {
       return;
     }
 
-    const cartItem = {
-      quantity: itemQuantity,
-      cart: { cartId },
-      product: { productID: product.productID },
-    };
-
     try {
-      const cartRes = await axios.get(`http://localhost:8080/api/cart/getCartById/${cartId}`);
-      const existingItem = cartRes.data.cartItems.find(
-        (item) => item.product.productID === product.productID
+      // Use the new endpoint we created: POST /api/cart/items?userId={userId}&productId={productId}&quantity={quantity}
+      const response = await axios.post(
+        "http://localhost:8080/api/cart/items",
+        null,
+        {
+          params: {
+            userId: userId,
+            productId: product.productID,
+            quantity: itemQuantity,
+          },
+        }
       );
 
-      if (existingItem) {
-        const updatedQuantity = existingItem.quantity + itemQuantity;
-        if (updatedQuantity > product.quantity) {
-          toast.error(
-            `You already have ${existingItem.quantity} in your cart. Cannot exceed stock.`
-          );
-          return;
-        }
-        await axios.put(
-          `http://localhost:8080/api/cartItem/updateCartItem/${existingItem.cartItemId}`,
-          { quantity: updatedQuantity }
-        );
-        toast.success(`Added ${itemQuantity} more to your cart!`);
-      } else {
-        await axios.post("http://localhost:8080/api/cartItem/postCartItem", cartItem);
-        toast.success("Added to cart!");
-      }
+      toast.success(`Added ${itemQuantity} to your cart!`);
+      console.log("Cart updated:", response.data);
+      setItemQuantity(1); // Reset quantity after adding
     } catch (err) {
       console.error("Cart error:", err);
-      toast.error("Failed to add to cart. Try again.");
+      const errorMsg = err.response?.data || err.message;
+      toast.error(`Failed to add to cart: ${errorMsg}`);
     }
   };
 

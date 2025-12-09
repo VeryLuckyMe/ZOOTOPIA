@@ -7,14 +7,27 @@ import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ccdjmv.petshop.entity.CartEntity;
 import com.ccdjmv.petshop.repository.CartRepository;
+import com.ccdjmv.petshop.repository.UserRepository;
+import com.ccdjmv.petshop.repository.ProductRepository;
+import com.ccdjmv.petshop.entity.UserEntity;
+import com.ccdjmv.petshop.entity.ProductEntity;
 
 @Service
 public class CartService {
+    private static final Logger logger = LoggerFactory.getLogger(CartService.class);
 	@Autowired
 	CartRepository cartRepo;
+
+	@Autowired
+	UserRepository userRepo;
+
+	@Autowired
+	ProductRepository productRepo;
 
 	public CartService() {
 		super();
@@ -74,11 +87,34 @@ public class CartService {
 
 	// Cart-item operations (migrated from CartItemService)
 	public CartEntity addItemToCart(Long cartId, Long productId, int quantity) {
+        logger.debug("CartService.addItemToCart invoked: cartId={}, productId={}, quantity={}", cartId, productId, quantity);
 		if (quantity <= 0) {
 			throw new IllegalArgumentException("Quantity must be greater than 0");
 		}
-		CartEntity cart = cartRepo.findById(cartId).orElseThrow(() ->
-				new NoSuchElementException("Cart " + cartId + " not found"));
+		// Ensure product exists
+		ProductEntity product = null;
+		try {
+			Integer prodIdInt = productId != null ? productId.intValue() : null;
+			if (prodIdInt == null || !productRepo.findById(prodIdInt).isPresent()) {
+				throw new NoSuchElementException("Product " + productId + " not found");
+			}
+			product = productRepo.findById(prodIdInt).get();
+		} catch (NumberFormatException nfe) {
+			throw new NoSuchElementException("Product " + productId + " not found");
+		}
+
+		// Fetch or create cart. CartId is the same as user id (CartEntity uses @MapsId)
+		CartEntity cart = cartRepo.findById(cartId).orElseGet(() -> {
+			// Try to find the user and create a cart for them
+			UserEntity user = userRepo.findById(cartId).orElse(null);
+			if (user == null) {
+				throw new NoSuchElementException("Cart " + cartId + " not found and no user to create cart");
+			}
+			CartEntity newCart = new CartEntity();
+			newCart.setUser(user);
+			// cartId will be set by MapsId relationship when saved
+			return cartRepo.save(newCart);
+		});
 
 		List<CartEntity.CartItem> items = cart.getCartItems();
 		if (items == null) {
@@ -99,7 +135,9 @@ public class CartService {
 			items.add(new CartEntity.CartItem(productId, quantity));
 		}
 		cart.setCartItems(items);
-		return cartRepo.save(cart);
+		CartEntity saved = cartRepo.save(cart);
+		logger.debug("CartService.addItemToCart saved cartId={}", saved.getCartId());
+		return saved;
 	}
 
 	public List<CartEntity.CartItem> getCartItems(Long cartId) {
