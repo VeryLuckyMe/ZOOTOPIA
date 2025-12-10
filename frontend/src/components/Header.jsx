@@ -87,6 +87,40 @@ export default function Header({ username, role, userId }) {
       }
     }
   }, [userId]);
+  useEffect(() => {
+  if (userId) {
+    // Load initial image
+    const storedImage = localStorage.getItem("profileImage");
+    if (storedImage) {
+      setProfileImage(storedImage);
+    }
+    
+    // Listen for storage changes (e.g., from Profile.jsx)
+    const handleStorageChange = (e) => {
+      if (e.key === "profileImage" && e.newValue) {
+        setProfileImage(e.newValue);
+      }
+    };
+    
+    window.addEventListener("storage", handleStorageChange);
+    
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }
+}, [userId]);
+
+// Also add this useEffect to handle updates within the same tab
+useEffect(() => {
+  const interval = setInterval(() => {
+    const storedImage = localStorage.getItem("profileImage");
+    if (storedImage && storedImage !== profileImage) {
+      setProfileImage(storedImage);
+    }
+  }, 500);
+  
+  return () => clearInterval(interval);
+}, [profileImage]);
 
   const pawPositions = [
     { top: "8%", left: "25%", width: "70px", opacity: 0.15, transform: "rotate(-20deg)", animationDelay: "0s" },

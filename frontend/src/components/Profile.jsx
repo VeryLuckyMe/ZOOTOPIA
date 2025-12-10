@@ -124,50 +124,64 @@ const Profile = ({ onProfileImageUpdate }) => {
     setOpenSnackbar(false);
   };
 
-  const handleImageUpload = async () => {
-    const id = localStorage.getItem('id');
-    if (!imageFile) {
-      setSnackbarMessage('No image selected. Please select a file first.');
-      setOpenSnackbar(true);
-      return;
-    }
-  
-    const formData = new FormData();
-    formData.append('profileImage', imageFile);
-  
-    try {
-      const response = await axios.post(
-        `http://localhost:8080/auth/users/${id}/upload-profile-pic`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-  
-      const updatedImage = `data:image/png;base64,${response.data.profileImage}`;
-      if (response.data.profileImage) {
-        const imageKey = `profileImage_${id}`;
-        localStorage.setItem(imageKey, updatedImage);
-  
-        setProfileImage(updatedImage);
-  
-        if (onProfileImageUpdate) {
-          onProfileImageUpdate(updatedImage);
-        }
-      } else {
-        throw new Error('Image not returned correctly');
+
+
+const handleImageUpload = async () => {
+  const id = localStorage.getItem('id');
+  if (!imageFile) {
+    setSnackbarMessage('No image selected. Please select a file first.');
+    setOpenSnackbar(true);
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('profileImage', imageFile);
+
+  try {
+    const response = await axios.post(
+      `http://localhost:8080/auth/users/${id}/upload-profile-pic`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       }
-  
+    );
+
+    if (response.data.profileImage) {
+      // Create the image URL
+      const updatedImage = `data:image/png;base64,${response.data.profileImage}`;
+      
+      // Store in localStorage with the SAME key that Header.jsx uses
+      localStorage.setItem('profileImage', updatedImage);
+      
+      // Also store it with userId key for backup
+      const imageKey = `profileImage_${id}`;
+      localStorage.setItem(imageKey, updatedImage);
+
+      // Update state
+      setProfileImage(updatedImage);
+
+      // Call the callback if it exists to update parent component
+      if (onProfileImageUpdate) {
+        onProfileImageUpdate(updatedImage);
+      }
+
+      // Show success message
       setSnackbarMessage('Profile picture updated successfully!');
       setOpenSnackbar(true);
-    } catch (err) {
-      console.error('Error uploading profile picture:', err.response || err);
-      setSnackbarMessage('Error uploading profile picture. Please try again.');
-      setOpenSnackbar(true);
+      
+      // Clear the file input
+      setImageFile(null);
+    } else {
+      throw new Error('Image not returned correctly');
     }
-  };
+  } catch (err) {
+    console.error('Error uploading profile picture:', err.response || err);
+    setSnackbarMessage('Error uploading profile picture. Please try again.');
+    setOpenSnackbar(true);
+  }
+};
 
   const handleFileChange = (e) => {
     if (e.target.files.length > 0) {
