@@ -121,42 +121,54 @@ const CheckoutPage = () => {
       .catch((err) => console.error("Error fetching user data:", err));
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedItems.length) return toast.warning("No items to order. Please add items to the cart.");
+ // Patch for deleting cart items by productId
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!selectedItems.length) return toast.warning("No items to order. Please add items to the cart.");
 
-    const orderItems = selectedItems.map((item) => ({
-      orderItemName: item.product.productName,
-      orderItemImage: item.product.productImage || imagePlaceholder,
-      price: item.product.productPrice,
-      quantity: item.quantity,
-      productId: item.product.productID,
-    }));
+  const orderItems = selectedItems.map((item) => ({
+    orderItemName: item.product.productName,
+    orderItemImage: item.product.productImage || imagePlaceholder,
+    price: item.product.productPrice,
+    quantity: item.quantity,
+    productId: item.product.productID, // use productID
+  }));
 
-    const orderData = {
-      orderItems,
-      orderDate: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
-      orderStatus: "To Receive",
-      paymentMethod: "Cash on Delivery",
-      totalPrice: orderSummary.total,
-      user,
-    };
-
-    try {
-      const res = await axios.post("http://localhost:8080/api/order/postOrderRecord", orderData);
-      if (res.status === 200) {
-        toast.success("Order successfully placed!");
-        for (let item of selectedItems) {
-          await axios.delete(`http://localhost:8080/api/cartItem/deleteCartItem/${item.cartItemId}`);
-        }
-        clearState();
-        navigate("/MyPurchases", { state: { orders: res.data } });
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to place order. Try again.");
-    }
+  const orderData = {
+    orderItems,
+    orderDate: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+    orderStatus: "To Receive",
+    paymentMethod: "Cash on Delivery",
+    totalPrice: orderSummary.total,
+    user,
   };
+
+  try {
+    const res = await axios.post("http://localhost:8080/api/order/postOrderRecord", orderData);
+    if (res.status === 200) {
+      toast.success("Order successfully placed!");
+
+      // Delete cart items by productId
+      for (let item of selectedItems) {
+        const pid = item.product.productID; // use productID as identifier
+        try {
+          await axios.delete(`http://localhost:8080/api/cartItem/deleteCartItem/product/${pid}`);
+          // fallback if backend expects body:
+          // await axios.delete('http://localhost:8080/api/cartItem/deleteCartItem', { data: { productId: pid } });
+        } catch (err) {
+          console.error(`Failed to delete cart item for product ${pid}:`, err);
+        }
+      }
+
+      // Clear checkout state
+      navigate("/MyPurchases", { state: { orders: res.data } });
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to place order. Try again.");
+  }
+};
+
 
   if (!user) return <Typography variant="h6">Loading user data...</Typography>;
 

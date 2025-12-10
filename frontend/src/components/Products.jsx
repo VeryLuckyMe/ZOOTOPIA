@@ -279,58 +279,64 @@ const Products = () => {
     setVisibleProducts((prev) => prev + 8);
   };
 
-  const handleAddToCart = async (selectedProduct, itemQuantity) => {
-    const cartId = localStorage.getItem("id");
-    if (!cartId) {
-      toast.warning("User is not logged in. Please log in and try again");
-      return;
-    }
-    if (itemQuantity <= 0) {
-      toast.warning("Quantity must be greater than 0!");
-      return;
-    }
-    const cartItem = {
-      quantity: itemQuantity,
-      cart: {
-        cartId: cartId,
-      },
-      product: {
-        productID: selectedProduct.productId,
-      },
-    };
+ const handleAddToCart = async (selectedProduct, itemQuantity) => {
+  const userId = localStorage.getItem("id");
+  if (!userId) {
+    toast.warning("User is not logged in. Please log in and try again.");
+    return;
+  }
+  if (itemQuantity <= 0) {
+    toast.warning("Quantity must be greater than 0!");
+    return;
+  }
 
-    try {
-      const cartResponse = await axios.get(`http://localhost:8080/api/cart/getCartById/${cartId}`);
-      const existingCartItems = cartResponse.data.cartItems;
-
-      const existingCartItem = existingCartItems.find((item) => item.product.productID === selectedProduct.productId);
-
-      if (existingCartItem) {
-        const updatedQuantity = existingCartItem.quantity + itemQuantity;
-        if (updatedQuantity > selectedProduct.stock) {
-          toast.error(
-            `You already have ${existingCartItem.quantity} in your cart. Unable to add more as it would exceed the remaining stock`
-          );
-          return;
-        }
-        console.log(existingCartItem.cartItemId);
-        await axios.put(`http://localhost:8080/api/cartItem/updateCartItem/${existingCartItem.cartItemId}`, {
-          quantity: updatedQuantity,
-        });
-
-        toast.success(`Added ${itemQuantity} more of this item to the cart`);
-      } else {
-        const response = await axios.post("http://localhost:8080/api/cartItem/postCartItem", cartItem);
-
-        console.log("Cart item added:", response.data);
-        toast.success("Added to cart!");
-      }
-      handleCloseDialog();
-    } catch (error) {
-      console.error("Error handling cart operation:", error);
-      toast.error("Failed to add to cart. Please try again.");
-    }
+  const cartItemData = {
+    quantity: itemQuantity,
+    cart: { cartId: userId },
+    product: { productID: selectedProduct.productId },
   };
+
+  try {
+    // Get the user's cart
+    const cartResponse = await axios.get(`http://localhost:8080/api/cart/getCartById/${userId}`);
+    const existingCartItems = cartResponse.data.cartItems;
+
+    // Check if this product already exists in the cart
+    const existingCartItem = existingCartItems.find(
+      (item) => item.product.productID === selectedProduct.productId
+    );
+
+    if (existingCartItem) {
+      // Update the quantity if it already exists
+      const updatedQuantity = existingCartItem.quantity + itemQuantity;
+
+      if (updatedQuantity > selectedProduct.stock) {
+        toast.error(
+          `You already have ${existingCartItem.quantity} in your cart. Cannot add more than available stock.`
+        );
+        return;
+      }
+
+    
+      await axios.put(
+        `http://localhost:8080/api/cartItem/updateCartItem/${existingCartItem.id}`,
+        { quantity: updatedQuantity }
+      );
+
+      toast.success(`Added ${itemQuantity} more of this item to the cart.`);
+    } else {
+      // Add new cart item
+      await axios.post("http://localhost:8080/api/cartItem/postCartItem", cartItemData);
+      toast.success("Added to cart!");
+    }
+
+    handleCloseDialog();
+  } catch (error) {
+    console.error("Error handling cart operation:", error);
+    toast.error("Failed to add to cart. Please try again.");
+  }
+};
+
 
   const filteredProducts = filterProducts();
   const displayedProducts = filteredProducts.slice(0, visibleProducts);

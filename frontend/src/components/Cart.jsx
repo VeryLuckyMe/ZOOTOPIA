@@ -28,84 +28,14 @@ import cart from "../assets/cart.png";
 
 const theme = createTheme({
   palette: {
-    primary: {
-      main: "#63a4ff", // Light Blue
-      light: "#95caff", // Even lighter
-    },
-    secondary: {
-      main: "#FFA500", // Orange for actions
-    },
-    background: {
-      default: "#e6f0ff", // Soft light blue background
-      paper: "#FFFFFF",
-    },
+    primary: { main: "#63a4ff", light: "#95caff" },
+    secondary: { main: "#FFA500" },
+    background: { default: "#e6f0ff", paper: "#FFFFFF" },
   },
   typography: {
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
   },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-          textTransform: "none",
-          fontWeight: 600,
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: 16,
-          boxShadow: "0 6px 12px rgba(0,0,0,0.1)",
-          transition: "transform 0.3s ease",
-          "&:hover": {
-            transform: "translateY(-5px)",
-          },
-          backgroundColor: "#FFFFFF",
-          position: "relative",
-          overflow: "visible",
-        },
-      },
-    },
-  },
 });
-
-const ScatteredPaws = ({ count = 10 }) => {
-  const positions = [
-    { top: "5%", left: "3%" },
-    { top: "10%", right: "5%" },
-    { bottom: "15%", left: "7%" },
-    { bottom: "10%", right: "3%" },
-    { top: "20%", left: "10%" },
-    { bottom: "25%", right: "10%" },
-    { top: "30%", left: "2%" },
-    { bottom: "5%", right: "15%" },
-    { top: "15%", right: "12%" },
-    { bottom: "20%", left: "15%" },
-  ];
-
-  return (
-    <>
-      {positions.slice(0, count).map((pos, index) => (
-        <Box
-          key={index}
-          component="img"
-          src={paw1}
-          alt="Paw Icon"
-          sx={{
-            position: "absolute",
-            width: "30px",
-            height: "30px",
-            opacity: 0.15,
-            zIndex: 1,
-            ...pos,
-          }}
-        />
-      ))}
-    </>
-  );
-};
 
 const PageWrapper = styled(Box)(({ theme }) => ({
   background: `linear-gradient(135deg, ${theme.palette.primary.light}20, ${theme.palette.background.default})`,
@@ -136,34 +66,35 @@ const PawPrint = styled("img")(({ theme }) => ({
 }));
 
 function Cart() {
+  // Cart state: each item has { productId, quantity, lastUpdated, product: { ...productData } }
   const [cartItems, setCartItem] = useState([]);
+  // selectedItems holds productId values (numbers/strings) as unique keys
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [openDialog, setOpenDialog] = useState(false);
   const [openNoAddressDialog, setNoAddressDialog] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState(null);
-  const [userId, setUserId] = useState(localStorage.getItem("id"));
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [userId] = useState(localStorage.getItem("id"));
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Loads cart -> then fetches product details per cart item
   const getCartItems = async () => {
     try {
       setLoading(true);
       const cartRes = await axios.get(`http://localhost:8080/api/cart/getCartById/${userId}`);
       const cartItemsData = cartRes.data.cartItems || [];
 
-      // Fetch product details for each cart item
+      // fetch product details for each productId
       const itemsWithProducts = await Promise.all(
         cartItemsData.map(async (item) => {
           try {
             const productRes = await axios.get(
               `http://localhost:8080/api/product/getProduct/${item.productId}`
             );
-            return {
-              ...item,
-              product: productRes.data,
-            };
+            return { ...item, product: productRes.data };
           } catch (err) {
             console.error(`Error fetching product ${item.productId}:`, err);
+            // fallback product object (so UI does not crash)
             return {
               ...item,
               product: {
@@ -178,11 +109,12 @@ function Cart() {
         })
       );
 
-      const sortedCartItems = itemsWithProducts.sort(
-        (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
+      // sort by lastUpdated if present
+      const sorted = itemsWithProducts.sort(
+        (a, b) => new Date(b.lastUpdated || 0) - new Date(a.lastUpdated || 0)
       );
 
-      setCartItem(sortedCartItems);
+      setCartItem(sorted);
     } catch (err) {
       console.error("Error fetching cart items", err);
       toast.error("Error fetching cart items");
@@ -198,32 +130,46 @@ function Cart() {
       return;
     }
     getCartItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleCheckChange = (itemId, isChecked) => {
-    const updatedSelectedItems = new Set(selectedItems);
-    if (isChecked) updatedSelectedItems.add(itemId);
-    else updatedSelectedItems.delete(itemId);
-    setSelectedItems(updatedSelectedItems);
+  const handleCheckChange = (productId, isChecked) => {
+    const updated = new Set(selectedItems);
+    if (isChecked) updated.add(productId);
+    else updated.delete(productId);
+    setSelectedItems(updated);
   };
 
-  const handleQuantityChange = (itemId, newQuantity) => {
+  const handleQuantityChange = (productId, newQuantity) => {
+  const cartId = userId;
+
     axios
-      .put(`http://localhost:8080/api/cartItem/updateCartItem/${itemId}`, {
-        quantity: newQuantity,
-      })
-      .then(() => {
-        setCartItem((prevItems) =>
-          prevItems.map((item) =>
-            item.cartItemId === itemId ? { ...item, quantity: newQuantity } : item
-          )
-        );
-      })
-      .catch(() => toast.error("Error updating quantity."));
-  };
+    .put(
+      `http://localhost:8080/api/cart/${cartId}/items`,
+      {},
+      {
+        params: {
+          productId: productId,
+          quantity: newQuantity,
+        },
+      }
+    )
+    .then(() => {
+      setCartItem((prev) =>
+        prev.map((it) =>
+          it.productId === productId ? { ...it, quantity: newQuantity } : it
+        )
+      );
+      toast.success("Quantity updated");
+    })
+    .catch((err) => {
+      console.error("Error updating quantity:", err);
+      toast.error("Error updating quantity.");
+    });
+};
 
-  const handleDeleteItem = (itemId) => {
-    setItemToDelete(itemId);
+  const handleDeleteItem = (productId) => {
+    setProductToDelete(productId);
     setOpenDialog(true);
   };
 
@@ -247,9 +193,7 @@ function Cart() {
           return;
         }
 
-        const selectedItemsDetails = cartItems.filter((item) =>
-          selectedItems.has(item.cartItemId)
-        );
+        const selectedItemsDetails = cartItems.filter((item) => selectedItems.has(item.productId));
 
         const orderSummary = {
           subtotal: getSubtotal(),
@@ -263,26 +207,38 @@ function Cart() {
   };
 
   const handleConfirmDelete = () => {
-    if (itemToDelete) {
-      axios
-        .delete(`http://localhost:8080/api/cartItem/deleteCartItem/${itemToDelete}`)
-        .then(() => {
-          setCartItem((prevItems) =>
-            prevItems.filter((item) => item.cartItemId !== itemToDelete)
-          );
-          setOpenDialog(false);
-          toast.success("Item removed from cart");
-        })
-        .catch(() => toast.error("Failed to delete item from cart"));
-    }
+    if (!productToDelete) return;
+
+    axios.delete(
+  `http://localhost:8080/api/cart/${userId}/items`,
+  {
+    params: {
+      productId: productToDelete,
+    },
+  }
+)
+      .then(() => {
+        setCartItem((prev) => prev.filter((item) => item.productId !== productToDelete));
+        setSelectedItems((prev) => {
+          const next = new Set(prev);
+          next.delete(productToDelete);
+          return next;
+        });
+        setOpenDialog(false);
+        toast.success("Item removed from cart");
+      })
+      .catch((err) => {
+        console.error("Failed to delete item:", err);
+        toast.error("Failed to delete item from cart");
+      });
   };
 
   const handleConfirmCreateAddress = () => navigate("/profile");
 
   const getSubtotal = () =>
     cartItems
-      .filter((item) => selectedItems.has(item.cartItemId))
-      .reduce((total, item) => total + item.product.productPrice * item.quantity, 0)
+      .filter((item) => selectedItems.has(item.productId))
+      .reduce((total, item) => total + (item.product?.productPrice || 0) * item.quantity, 0)
       .toFixed(2);
 
   const getShippingFee = () => (parseFloat(getSubtotal()) === 0 ? "0.00" : "30.00");
@@ -296,21 +252,10 @@ function Cart() {
       <PageWrapper>
         <HeaderWrapper>
           <CartIcon src={cart} alt="Cart Icon" />
-          <Typography
-            variant="h3"
-            component="h1"
-            sx={{
-              textAlign: "center",
-              fontWeight: 700,
-              color: "primary.main",
-              textShadow: "1px 1px 2px rgba(0,0,0,0.1)",
-            }}
-          >
+          <Typography variant="h3" component="h1" sx={{ fontWeight: 700, color: "primary.main" }}>
             Your Shopping Cart
           </Typography>
         </HeaderWrapper>
-
-        <ScatteredPaws />
 
         <Grid container spacing={4} justifyContent="center">
           <Grid item xs={12} md={8}>
@@ -326,19 +271,20 @@ function Cart() {
                     </TableRow>
                   </TableHead>
                 </Table>
+
                 {cartItems.length === 0 ? (
                   <EmptyCart />
                 ) : (
                   <Grid container spacing={2}>
                     {cartItems.map((item, index) => (
                       <CartItem
-                        key={index}
+                        key={item.productId ?? index}
                         price={item.product?.productPrice}
                         title={item.product?.productName}
                         quantity={item.quantity}
                         image={item.product?.productImage}
-                        itemId={item.cartItemId}
-                        isSelected={selectedItems.has(item.cartItemId)}
+                        itemId={item.productId} // now productId is the identifier
+                        isSelected={selectedItems.has(item.productId)}
                         onCheckChange={handleCheckChange}
                         onQuantityChange={handleQuantityChange}
                         onDelete={handleDeleteItem}
