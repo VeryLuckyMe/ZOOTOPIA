@@ -319,18 +319,31 @@ export default function Header({ username, role, userId }) {
         </Toolbar>
       </AppBar>
 
-      {/* Drawer */}
+      {/* Drawer - Fixed z-index issue */}
       <Drawer
         anchor="right"
         open={drawerOpen}
         onClose={handleDrawerToggle}
         disableEnforceFocus
         sx={{
+          zIndex: 1400, // Higher than header's 1300
           "& .MuiDrawer-paper": {
             width: 300,
             background: "linear-gradient(180deg, #9ec6ff 0%, #b8d7ff 100%)",
             boxShadow: "-4px 0 20px rgba(0, 0, 0, 0.1)",
+            zIndex: 1400,
           },
+        }}
+        ModalProps={{
+          BackdropProps: {
+            style: {
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 1399,
+            }
+          },
+          style: {
+            zIndex: 1400,
+          }
         }}
       >
         <Box
