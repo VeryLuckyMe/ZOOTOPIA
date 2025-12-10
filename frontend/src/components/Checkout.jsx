@@ -122,6 +122,8 @@ const CheckoutPage = () => {
   }, []);
 
  // Patch for deleting cart items by productId
+// Replace the handleSubmit function in Checkout.jsx
+
 const handleSubmit = async (e) => {
   e.preventDefault();
   if (!selectedItems.length) return toast.warning("No items to order. Please add items to the cart.");
@@ -131,7 +133,7 @@ const handleSubmit = async (e) => {
     orderItemImage: item.product.productImage || imagePlaceholder,
     price: item.product.productPrice,
     quantity: item.quantity,
-    productId: item.product.productID, // use productID
+    productId: item.product.productID,
   }));
 
   const orderData = {
@@ -148,19 +150,31 @@ const handleSubmit = async (e) => {
     if (res.status === 200) {
       toast.success("Order successfully placed!");
 
-      // Delete cart items by productId
+      // Get userId from localStorage to delete cart items
+      const userId = localStorage.getItem("id");
+
+      // Delete each cart item after successful order
       for (let item of selectedItems) {
-        const pid = item.product.productID; // use productID as identifier
+        const productId = item.product.productID;
         try {
-          await axios.delete(`http://localhost:8080/api/cartItem/deleteCartItem/product/${pid}`);
-          // fallback if backend expects body:
-          // await axios.delete('http://localhost:8080/api/cartItem/deleteCartItem', { data: { productId: pid } });
+          // Use the correct endpoint with query parameter
+          await axios.delete(
+            `http://localhost:8080/api/cart/${userId}/items`,
+            {
+              params: {
+                productId: productId,
+              },
+            }
+          );
+          console.log(`Successfully deleted cart item for product ${productId}`);
         } catch (err) {
-          console.error(`Failed to delete cart item for product ${pid}:`, err);
+          console.error(`Failed to delete cart item for product ${productId}:`, err);
+          // Continue with other items even if one fails
         }
       }
 
-      // Clear checkout state
+      // Clear checkout state and navigate to orders page
+      clearState();
       navigate("/MyPurchases", { state: { orders: res.data } });
     }
   } catch (err) {

@@ -256,7 +256,6 @@ function Cart() {
             Your Shopping Cart
           </Typography>
         </HeaderWrapper>
-
         <Grid container spacing={4} justifyContent="center">
           <Grid item xs={12} md={8}>
             <Card variant="outlined">
