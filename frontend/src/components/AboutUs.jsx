@@ -9,17 +9,18 @@ import carlos from "../assets/carlos.png";
 import clark from "../assets/clark.png";
 import paw1 from "../assets/paw1.png";
 
+// Theme Configuration
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2E3B55',
-      light: '#4A5F8C',
+      main: '#8670ffff',
+      light: '#2600ffff',
     },
     secondary: {
-      main: '#FF6B35',
+      main: '#4c3fffff',
     },
     background: {
-      default: '#F8FAFC',
+      default: '#d2e1ffff',
       paper: '#FFFFFF',
     },
   },

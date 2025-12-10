@@ -48,20 +48,21 @@ const UserAppointmentList = () => {
 
     fetchAppointments();
   }, []);
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: '#8B4513', // Rich Brown
-        light: '#D2B48C', // Tan
-      },
-      secondary: {
-        main: '#FFA500', // Vibrant Orange
-      },
-      background: {
-        default: '#FFF5E6', // Soft Cream
-        paper: '#FFFFFF',
-      },
+// Theme Configuration
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#8670ffff',
+      light: '#2600ffff',
     },
+    secondary: {
+      main: '#4c3fffff',
+    },
+    background: {
+      default: '#d2e1ffff',
+      paper: '#FFFFFF',
+    },
+  },
     typography: {
       fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
     },
