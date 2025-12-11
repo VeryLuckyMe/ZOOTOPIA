@@ -1,4 +1,4 @@
-package com.ccdjmv.petshop;
+package com.zootopia.petshop;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
