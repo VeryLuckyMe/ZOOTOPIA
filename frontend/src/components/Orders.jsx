@@ -21,14 +21,14 @@ import paw1 from '../assets/paw1.png';
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#63a4ff", // Light Blue
-      light: "#95caff", // Even lighter
+      main: "#63a4ff",
+      light: "#95caff",
     },
     secondary: {
-      main: "#001affff", // Orange for actions
+      main: "#001affff",
     },
     background: {
-      default: "#e6f0ff", // Soft light blue background
+      default: "#e6f0ff",
       paper: "#FFFFFF",
     },
   },
@@ -129,32 +129,31 @@ function OrderList() {
 
   useEffect(() => {
     const userId = localStorage.getItem('id');
+    
     axios
       .get(`http://localhost:8080/api/order/getAllOrdersByUserId`, {
         params: { userId },
       })
       .then((response) => {
-        console.log("Orders fetched from backend:", response.data);
-        setOrders(response.data);
+        // Sort by orderID in descending order (most recent first)
+        const sortedOrders = response.data.sort((a, b) => b.orderID - a.orderID);
+        setOrders(sortedOrders);
         setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching orders:", error);
         setLoading(false);
       });
-}, []);
+  }, []);
 
   const calculateTotal = (items) => {
     const shippingFee = 30;
     let itemsTotal = 0;
 
-    if (items) {
+    if (items && Array.isArray(items)) {
       items.forEach((item) => {
-        console.log("Item details in calculateTotal:", item);
         if (item.price && item.quantity) {
           itemsTotal += item.price * item.quantity;
-          console.log("Item price:", item.price);
-          console.log("Item quantity:", item.quantity);
         }
       });
     }
@@ -193,7 +192,6 @@ function OrderList() {
             <Typography textAlign="center">No orders available.</Typography>
           ) : (
             orders.map((order) => {
-              console.log("Order data:", order);
               const total = calculateTotal(order.orderItems || []);
 
               return (
@@ -220,9 +218,9 @@ function OrderList() {
                       sx={{
                         fontWeight: "bold",
                         color:
-                          order.status === "DELIVERED"
+                          order.orderStatus === "DELIVERED"
                             ? "green"
-                            : order.status === "SHIPPED"
+                            : order.orderStatus === "SHIPPED"
                             ? "orange"
                             : "red",
                         backgroundColor: 'rgba(255,255,255,0.8)',
