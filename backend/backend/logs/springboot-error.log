@@ -1,5 +1,5 @@
-2024-11-08T08:17:06.181+08:00  INFO 23252 --- [petshop] [restartedMain] com.ccdjmv.petshop.PetshopApplication    : Starting PetshopApplication using Java 22.0.2 with PID 23252 (C:\Users\William\Downloads\petshop\petshop\target\classes started by William in C:\Users\William\Downloads\petshop\petshop)
-2024-11-08T08:17:06.182+08:00  INFO 23252 --- [petshop] [restartedMain] com.ccdjmv.petshop.PetshopApplication    : No active profile set, falling back to 1 default profile: "default"
+2024-11-08T08:17:06.181+08:00  INFO 23252 --- [petshop] [restartedMain] com.zootopia.petshop.PetshopApplication    : Starting PetshopApplication using Java 22.0.2 with PID 23252 (C:\Users\William\Downloads\petshop\petshop\target\classes started by William in C:\Users\William\Downloads\petshop\petshop)
+2024-11-08T08:17:06.182+08:00  INFO 23252 --- [petshop] [restartedMain] com.zootopia.petshop.PetshopApplication    : No active profile set, falling back to 1 default profile: "default"
 2024-11-08T08:17:06.468+08:00  INFO 23252 --- [petshop] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
 2024-11-08T08:17:06.489+08:00  INFO 23252 --- [petshop] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 19 ms. Found 2 JPA repository interfaces.
 2024-11-08T08:17:06.635+08:00  INFO 23252 --- [petshop] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
@@ -54,7 +54,7 @@ org.hibernate.tool.schema.spi.CommandAcceptanceException: Error executing DDL "a
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335) ~[spring-boot-3.3.4.jar:3.3.4]
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363) ~[spring-boot-3.3.4.jar:3.3.4]
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352) ~[spring-boot-3.3.4.jar:3.3.4]
-	at com.ccdjmv.petshop.PetshopApplication.main(PetshopApplication.java:14) ~[classes/:na]
+	at com.zootopia.petshop.PetshopApplication.main(PetshopApplication.java:14) ~[classes/:na]
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
 	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.3.4.jar:3.3.4]
@@ -72,7 +72,7 @@ Caused by: java.sql.SQLSyntaxErrorException: Incorrect column specifier for colu
 2024-11-08T08:17:06.941+08:00  WARN 23252 --- [petshop] [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
 2024-11-08T08:17:07.091+08:00  INFO 23252 --- [petshop] [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
 2024-11-08T08:17:07.102+08:00  INFO 23252 --- [petshop] [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
-2024-11-08T08:17:07.107+08:00  INFO 23252 --- [petshop] [restartedMain] com.ccdjmv.petshop.PetshopApplication    : Started PetshopApplication in 0.979 seconds (process running for 259.225)
+2024-11-08T08:17:07.107+08:00  INFO 23252 --- [petshop] [restartedMain] com.zootopia.petshop.PetshopApplication    : Started PetshopApplication in 0.979 seconds (process running for 259.225)
 2024-11-08T08:17:07.110+08:00  INFO 23252 --- [petshop] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
 2024-11-08T08:17:52.633+08:00  INFO 23252 --- [petshop] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
 2024-11-08T08:17:52.645+08:00  INFO 23252 --- [petshop] [Thread-7] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
