@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zootopia - Premium Pet Care</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700,800|Poppins:400,600,700|Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="main-header" id="mainHeader">
+        <div class="header-logo" onclick="window.location.href='index.html'">
+            <img src="assets/elogo.png" alt="Zootopia Logo">
+        </div>
+        <nav class="header-nav">
+            <button class="nav-link" onclick="window.location.href='index.html'">Home</button>
+            <button class="nav-link">Products</button>
+            <button class="nav-link">About Us</button>
+        </nav>
+        <button class="login-btn">Login</button>
+    </header>
+
+    <!-- Background Elements (Scattered Paws) -->
+    <div id="scatteredPaws">
+        <!-- Paws will be injected via JS or hardcoded here -->
+        <img src="assets/paw1.png" class="scattered-paw" style="top: 8%; left: 5%; animation-delay: 0s;">
+        <img src="assets/paw1.png" class="scattered-paw" style="top: 15%; right: 8%; animation-delay: 0.5s;">
+        <img src="assets/paw1.png" class="scattered-paw" style="bottom: 20%; left: 10%; animation-delay: 1s;">
+        <img src="assets/paw1.png" class="scattered-paw" style="bottom: 12%; right: 6%; animation-delay: 1.5s;">
+        <img src="assets/paw1.png" class="scattered-paw" style="top: 35%; left: 3%; animation-delay: 2s;">
+        <img src="assets/paw1.png" class="scattered-paw" style="bottom: 30%; right: 12%; animation-delay: 2.5s;">
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <span class="hero-subtitle">PREMIUM PET CARE SERVICES</span>
+                    <h1 class="hero-title">Welcome to FURshop!</h1>
+                    <p class="hero-description">Your trusted partner for premium pet care, professional grooming
+                        services, and quality products for your beloved companions</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary-inverse">Browse Products</button>
+                        <button class="btn btn-outline-white"><i class="fas fa-calendar-alt"></i> Book Service</button>
+                    </div>
+                </div>
+                <div class="hero-image-container">
+                    <img src="assets/homeanimation.gif" alt="Pet Animation" class="hero-image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container" style="padding-bottom: 80px;">
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-icon">😊</div>
+                    <span class="stat-number">5,000+</span>
+                    <span class="stat-label">Happy Customers</span>
+                    <span class="stat-sublabel">And growing</span>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">⭐</div>
+                    <span class="stat-number">500+</span>
+                    <span class="stat-label">Premium Products</span>
+                    <span class="stat-sublabel">Carefully curated</span>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">👨‍⚕️</div>
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Expert Staff</span>
+                    <span class="stat-sublabel">Certified professionals</span>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">🕒</div>
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Support Available</span>
+                    <span class="stat-sublabel">Always here for you</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products Section -->
+        <section class="featured-products" style="margin-bottom: 96px;">
+            <div class="section-header">
+                <h2 class="section-title">Featured Products</h2>
+                <p class="section-subtitle">Discover our carefully curated selection of premium pet products</p>
+                <div class="section-divider"></div>
+            </div>
+
+            <!-- Static Products Grid (Mocked) -->
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be injected via JS or hardcoded below -->
+                <!-- Product 1 -->
+                <div class="product-card">
+                    <span class="product-badge">Dog Food</span>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <span>4.8</span>
+                    </div>
+                    <div class="product-image-container">
+                        <img src="assets/grooming.png" alt="Premium Dog Food" style="object-fit: contain;">
+                        <!-- Placeholder image -->
+                    </div>
+                    <div class="card-content">
+                        <h3 class="product-name">Premium Dog Food - Beef Flavor</h3>
+                        <p class="product-desc">High-quality beef based dog food rich in protein...</p>
+                        <div class="product-footer">
+                            <h4 class="product-price">₱1,200.00</h4>
+                        </div>
+                        <button class="btn btn-secondary"><i class="fas fa-shopping-bag"></i> &nbsp; Go to
+                            Products</button>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="product-card">
+                    <span class="product-badge">Accessories</span>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <span>4.9</span>
+                    </div>
+                    <div class="product-image-container">
+                        <img src="assets/paw1.png" alt="Cat Collar" style="object-fit: contain;">
+                        <!-- Placeholder image -->
+                    </div>
+                    <div class="card-content">
+                        <h3 class="product-name">Reflective Cat Collar</h3>
+                        <p class="product-desc">Safety first with our reflective collars for night...</p>
+                        <div class="product-footer">
+                            <h4 class="product-price">₱350.00</h4>
+                        </div>
+                        <button class="btn btn-secondary"><i class="fas fa-shopping-bag"></i> &nbsp; Go to
+                            Products</button>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="product-card">
+                    <span class="product-badge">Toys</span>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <span>4.7</span>
+                    </div>
+                    <div class="product-image-container">
+                        <img src="assets/homeanimation.gif" alt="Rubber Chew Toy" style="object-fit: contain;">
+                        <!-- Placeholder image -->
+                    </div>
+                    <div class="card-content">
+                        <h3 class="product-name">Durable Rubber Chew Toy</h3>
+                        <p class="product-desc">Long-lasting chew toy for aggressive chewers...</p>
+                        <div class="product-footer">
+                            <h4 class="product-price">₱450.00</h4>
+                        </div>
+                        <button class="btn btn-secondary"><i class="fas fa-shopping-bag"></i> &nbsp; Go to
+                            Products</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services-section" style="margin-bottom: 96px;">
+            <div class="section-header">
+                <h2 class="section-title">Professional Grooming Services</h2>
+                <p class="section-subtitle">Expert care delivered with compassion and professionalism</p>
+            </div>
+
+            <div class="content-grid">
+                <div class="feature-card">
+                    <h3 class="feature-title">Why Choose Our Services</h3>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span class="feature-text">Certified and experienced professional groomers</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span class="feature-text">Premium quality products and equipment</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span class="feature-text">Safe, clean, and comfortable facilities</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span class="feature-text">Personalized care plans for each pet</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span class="feature-text">Emergency veterinary care available</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span class="feature-text">Satisfaction guaranteed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="image-card">
+                    <div class="card-image-wrapper">
+                        <img src="assets/grooming.png" alt="Grooming Services">
+                    </div>
+                    <div class="card-content">
+                        <h3 class="feature-title">Professional Grooming</h3>
+                        <p class="product-desc">
+                            Our certified groomers provide top-quality services tailored to your pets specific needs,
+                            ensuring they look and feel their best in a safe and comfortable environment.
+                        </p>
+                        <button class="btn btn-secondary"><i class="fas fa-calendar-alt"></i> &nbsp; Schedule
+                            Appointment</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <h2 class="cta-title">Ready to Get Started?</h2>
+            <p class="cta-text">Join thousands of satisfied pet owners who trust Zootopia for their pet care needs</p>
+            <div class="cta-buttons">
+                <button class="btn btn-primary">Shop Products</button>
+                <button class="btn btn-outline-primary"><i class="fas fa-calendar-alt"></i> Book Service</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <img src="assets/logo.png" alt="Tails & Whiskers Logo" class="footer-logo">
+        <p class="footer-text">© All Rights Reserved</p>
+        <div class="footer-contact">
+            <p>Phone: +63 999 999 9999</p>
+            <p>Address: Cebu, PH</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,328 @@
+/* Global Styles - consistent with homepage */
+body {
+    font-family: 'Poppins', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #2D3748;
+    background-color: #FFFDE1;
+    /* Theme background from ProductList.jsx */
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Animations not strictly needed for this simple page but good to have */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header Styles */
+.main-header {
+    background-color: #980404;
+    box-shadow: 0 8px 30px #FBE580;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1300;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+}
+
+.header-logo img {
+    width: 180px;
+    height: auto;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    cursor: pointer;
+}
+
+.header-nav {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-left: auto;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.login-btn {
+    margin-left: 24px;
+    background-color: white;
+    color: #93BD57;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.login-btn:hover {
+    background-color: rgba(255, 255, 255, 0.95);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Main Content Area */
+.main-content {
+    padding-top: 100px;
+    /* Offset for fixed header */
+    padding-bottom: 60px;
+    flex-grow: 1;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.page-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #93BD57;
+    /* primary.main */
+    margin-bottom: 32px;
+}
+
+/* Products Grid */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 24px;
+}
+
+@media (min-width: 600px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 900px) {
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    .products-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Product Card */
+.product-card {
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(134, 112, 255, 0.2);
+}
+
+.card-image-wrapper {
+    height: 240px;
+    background-color: #F8F9FE;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-image-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.card-content {
+    padding: 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: #2D3748;
+}
+
+.product-description {
+    font-size: 0.875rem;
+    color: #718096;
+    /* text.secondary */
+    margin: 0 0 16px 0;
+    line-height: 1.5;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #93BD57;
+    margin: 0 0 8px 0;
+}
+
+.product-stock {
+    font-size: 0.75rem;
+    color: #718096;
+    margin-bottom: 16px;
+}
+
+.card-actions {
+    padding: 0 16px 16px 16px;
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    background-color: #980404;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+    font-family: inherit;
+}
+
+.add-to-cart-btn:hover {
+    background-color: #6b59cc;
+}
+
+.add-to-cart-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Toast Notification */
+.toast-container {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1400;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.toast {
+    background-color: white;
+    color: #333;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideDown 0.3s ease-out;
+    min-width: 300px;
+    border-left: 4px solid #4caf50;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Footer Styles */
+.main-footer {
+    background-color: #d3d4ffff;
+    padding: 20px;
+    border-top: 1px solid black;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.footer-logo {
+    height: 300px;
+    margin-bottom: -50px;
+    margin-top: -100px;
+}
+
+.footer-text {
+    margin-top: 8px;
+    color: black;
+    font-size: 0.875rem;
+}
+
+.footer-contact {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    text-align: right;
+    color: black;
+}
+
+.footer-contact p {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.43;
+}

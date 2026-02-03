@@ -1,0 +1,202 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header Styles */
+.admin-header {
+    background-color: #d3d4ffff;
+    border-radius: 10px 10px 0 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1100;
+    box-shadow: none;
+    height: 64px;
+    /* Approximate height of MUI Toolbar */
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+}
+
+.header-toolbar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.header-title {
+    flex-grow: 1;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: black;
+    margin: 0;
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    color: black;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.75;
+    text-transform: uppercase;
+    padding: 6px 8px;
+    margin: 0 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.nav-btn:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.logout-btn {
+    color: red;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+.logout-btn:hover {
+    background-color: #d32f2f;
+    /* error.dark approx */
+    color: white;
+}
+
+/* Page Content Spacer */
+.page-spacer {
+    margin-top: 80px;
+    /* 64px header + spacing */
+    flex-grow: 1;
+}
+
+.dashboard-container {
+    padding: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Welcome Section */
+.welcome-section {
+    margin-bottom: 40px;
+}
+
+.welcome-title {
+    font-size: 2.125rem;
+    font-weight: 700;
+    margin-bottom: 0.35em;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.welcome-subtitle {
+    font-size: 1rem;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.6);
+    line-height: 1.5;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 24px;
+}
+
+@media (min-width: 600px) {
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 900px) {
+    .metrics-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.metric-card {
+    background-color: #fff;
+    color: rgba(0, 0, 0, 0.87);
+    transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    border-radius: 4px;
+    box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+    padding: 16px;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.metric-title {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 1.5rem;
+    line-height: 1.334;
+    color: black;
+}
+
+.metric-value {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 2.125rem;
+    line-height: 1.235;
+}
+
+.metric-icon {
+    align-self: flex-end;
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 24px;
+}
+
+/* Footer Styles */
+.admin-footer {
+    background-color: #d3d4ffff;
+    padding: 20px;
+    border-top: 1px solid black;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: auto;
+}
+
+.footer-logo {
+    height: 300px;
+    margin-bottom: -50px;
+    margin-top: -100px;
+}
+
+.footer-text {
+    margin-top: 8px;
+    color: black;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.875rem;
+}
+
+.footer-contact {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    text-align: right;
+    color: black;
+}
+
+.footer-contact p {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.43;
+}
