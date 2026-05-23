@@ -59,6 +59,10 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference("user-productreview") // Correct annotation for serialization
     private List<ProductReviewEntity> reviews;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference("user-pet")
+    private List<PetEntity> pets;
     
     public UserEntity() {	
 		super();
@@ -78,6 +82,22 @@ public class UserEntity {
 		this.cart = cart;
 		this.address = address;
 		this.profileImage  = profileImage;
+	}
+
+	public UserEntity(Long id, String username, String firstName, String lastName, String email, String password,
+			String role, CartEntity cart, AddressEntity address, String profileImage, List<PetEntity> pets) {
+		super();
+		this.id = id;
+		this.username = username;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
+		this.role = role;
+		this.cart = cart;
+		this.address = address;
+		this.profileImage  = profileImage;
+		this.pets = pets;
 	}
 
 	public String getProfileImage() {
@@ -157,6 +177,15 @@ public class UserEntity {
 
     public void setAddress(AddressEntity address) {
         this.address = address;
+    }
+
+    // Getter and Setter for pets
+    public List<PetEntity> getPets() {
+        return pets;
+    }
+
+    public void setPets(List<PetEntity> pets) {
+        this.pets = pets;
     }
 
 }
